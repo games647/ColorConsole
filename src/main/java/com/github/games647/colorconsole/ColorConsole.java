@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
@@ -32,40 +32,60 @@ public class ColorConsole extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        Appender terminalAppender = getTerminalAppender();
+        Logger rootLogger = ((Logger) LogManager.getRootLogger());
+
+        ColorPluginAppender colorPluginAppender = null;
+        for (Appender value : rootLogger.getAppenders().values()) {
+            if (value instanceof ColorPluginAppender) {
+                colorPluginAppender = (ColorPluginAppender) value;
+                break;
+            }
+        }
+
+        if (colorPluginAppender != null) {
+            rootLogger.removeAppender(terminalAppender);
+            rootLogger.addAppender(colorPluginAppender.getOldAppender());
+        }
+
         setLayout(oldLayout);
     }
 
     private void installLogFormat() {
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration conf = ctx.getConfiguration();
-
-//        ConsoleAppender consoleAppender = (ConsoleAppender) conf.getAppenders().get("WINDOWS_COMPAT");
-        Appender terminalAppender = conf.getAppenders().get("TerminalConsole");
+        Appender terminalAppender = getTerminalAppender();
 
         oldLayout = terminalAppender.getLayout();
-
         PatternLayout layout = PatternLayout
-                .createLayout("[%highlight{%d{HH:mm:ss} %-5level]: %msg%n}{FATAL=red blink, ERROR=red, WARN=yellow bold, "
-                        + "INFO=gray, DEBUG=green bold, TRACE=blue}", new DefaultConfiguration(), null
-                        , Charset.defaultCharset().name(), "true");
+                .createLayout("%highlight{[%d{HH:mm:ss} %-5level]: %msg%n}{FATAL=red blink, ERROR=red, "
+                        + "WARN=yellow bold, INFO=gray, DEBUG=green bold, TRACE=blue}", new DefaultConfiguration()
+                        , null, Charset.defaultCharset().name(), "true");
         setLayout(layout);
+
+        Logger rootLogger = ((Logger) LogManager.getRootLogger());
+
+        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender);
+        pluginAppender.start();
+
+        rootLogger.removeAppender(terminalAppender);
+        rootLogger.addAppender(pluginAppender);
     }
 
     private void setLayout(Layout<? extends Serializable> layout) {
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration conf = ctx.getConfiguration();
-
-        Appender terminalAppender = conf.getAppenders().get("TerminalConsole");
+        Appender terminalAppender = getTerminalAppender();
 
         try {
             Field field = terminalAppender.getClass().getSuperclass().getDeclaredField("layout");
             field.setAccessible(true);
             field.set(terminalAppender, layout);
         } catch (Exception ex) {
-            Logger.getLogger(ColorConsole.class.getName()).log(Level.SEVERE, "Failed to install log format", ex);
+            getLogger().log(Level.SEVERE, "Failed to install log format", ex);
         }
+    }
 
-//        conf.getLoggerConfig(LogManager.ROOT_LOGGER_NAME).setLevel(org.apache.logging.log4j.Level.ALL);
-        ctx.updateLoggers(conf);
+    private Appender getTerminalAppender() {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration conf = ctx.getConfiguration();
+
+        return conf.getAppenders().get("TerminalConsole");
     }
 }
