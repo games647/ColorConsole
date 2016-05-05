@@ -21,12 +21,16 @@ public class ColorConsole extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        saveDefaultConfig();
+
         //try to run it as early as possible
         installLogFormat();
     }
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
+
         installLogFormat();
     }
 
@@ -55,19 +59,25 @@ public class ColorConsole extends JavaPlugin {
         Appender terminalAppender = getTerminalAppender();
 
         oldLayout = terminalAppender.getLayout();
+        String logFormat = getConfig().getString("logFormat");
+        if (getConfig().getBoolean("colorLoggingLevel")) {
+            logFormat = "%highlight{" + logFormat + "}{"
+                    + "FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=gray, DEBUG=green bold, TRACE=blue}";
+        }
+
         PatternLayout layout = PatternLayout
-                .createLayout("%highlight{[%d{HH:mm:ss} %-5level]: %msg%n}{FATAL=red blink, ERROR=red, "
-                        + "WARN=yellow bold, INFO=gray, DEBUG=green bold, TRACE=blue}", new DefaultConfiguration()
-                        , null, Charset.defaultCharset().name(), "true");
+                .createLayout(logFormat, new DefaultConfiguration(), null, Charset.defaultCharset().name(), "true");
         setLayout(layout);
 
-        Logger rootLogger = ((Logger) LogManager.getRootLogger());
+        if (getConfig().getBoolean("colorPluginTag")) {
+            Logger rootLogger = ((Logger) LogManager.getRootLogger());
 
-        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender);
-        pluginAppender.start();
+            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender);
+            pluginAppender.start();
 
-        rootLogger.removeAppender(terminalAppender);
-        rootLogger.addAppender(pluginAppender);
+            rootLogger.removeAppender(terminalAppender);
+            rootLogger.addAppender(pluginAppender);
+        }
     }
 
     private void setLayout(Layout<? extends Serializable> layout) {
