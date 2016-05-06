@@ -19,4 +19,19 @@ colorLoggingLevel: true
 # %line - Line number
 #
 # For more details vist: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns
-logFormat: '[%d{HH:mm:ss} %-5level]: %msg%n'
+logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
+
+# Log Level Colors
+FATAL: red blink
+ERROR: red
+WARN: yellow bold
+INFO: gray
+DEBUG: green bold
+TRACE: blue
+
+#Plugin Colors
+PLUGIN: blue
+P-Essentials: green
+P-WorldEdit: red
+P-WorldGuard: cyan
+P-Vault: magenta
