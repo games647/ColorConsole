@@ -77,7 +77,7 @@ public class ColorConsole extends JavaPlugin {
         if (getConfig().getBoolean("colorPluginTag")) {
             Logger rootLogger = ((Logger) LogManager.getRootLogger());
 
-            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender);
+            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, this);
             pluginAppender.start();
 
             rootLogger.removeAppender(terminalAppender);

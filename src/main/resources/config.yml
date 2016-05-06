@@ -29,3 +29,9 @@ INFO: gray
 DEBUG: green bold
 TRACE: blue
 
+#Plugin Colors
+PLUGIN: blue
+P-Essentials: green
+P-WorldEdit: red
+P-WorldGuard: cyan
+P-Vault: magenta
