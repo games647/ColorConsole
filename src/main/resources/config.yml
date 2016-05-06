@@ -29,9 +29,25 @@ INFO: gray
 DEBUG: green bold
 TRACE: blue
 
-#Plugin Colors
+# Plugin Colors
 PLUGIN: blue
 P-Essentials: green
 P-WorldEdit: red
 P-WorldGuard: cyan
 P-Vault: magenta
+
+# Available foreground colors   | Available background colors
+# Black                         |   BG_Black
+# Red                           |   BG_Red
+# Green                         |   BG_Green
+# Yellow                        |   BG_Yellow
+# Blue                          |   BG_Blue
+# Magenta                       |   BG_Magenta
+# Cyan                          |   BG_Cyan
+# White                         |   BG_White
+# Default                       |
+
+# Available styling options
+# blink
+# bold
+# underline
