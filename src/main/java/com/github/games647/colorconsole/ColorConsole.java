@@ -62,7 +62,12 @@ public class ColorConsole extends JavaPlugin {
         String logFormat = getConfig().getString("logFormat");
         if (getConfig().getBoolean("colorLoggingLevel")) {
             logFormat = "%highlight{" + logFormat + "}{"
-                    + "FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=gray, DEBUG=green bold, TRACE=blue}";
+                    + "FATAL=" + getConfig().getString("FATAL") + ", "
+                    + "ERROR=" + getConfig().getString("ERROR") + ", "
+                    + "WARN=" + getConfig().getString("WARN") + ", "
+                    + "INFO=" + getConfig().getString("INFO") + ", "
+                    + "DEBUG=" + getConfig().getString("DEBUG") + ", "
+                    + "TRACE=" + getConfig().getString("TRACE") + "}";
         }
 
         PatternLayout layout = PatternLayout

@@ -21,3 +21,11 @@ colorLoggingLevel: true
 # For more details vist: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns
 logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 
+# Log Level Colors
+FATAL: red blink
+ERROR: red
+WARN: yellow bold
+INFO: gray
+DEBUG: green bold
+TRACE: blue
+
