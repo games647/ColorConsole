@@ -1,4 +1,4 @@
-package com.github.games647.colorconsole;
+package com.github.games647.colorconsole.bukkit;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LogEvent;
@@ -15,12 +15,12 @@ public class ColorPluginAppender extends AbstractAppender {
 
     private final Appender oldAppender;
 
-    private final ColorConsole plugin;
+    private final ColorConsoleBukkit plugin;
 
     private final String reset = Ansi.ansi().a(Attribute.RESET).toString();
     private final String defaultPluginColor;
 
-    public ColorPluginAppender(Appender oldAppender, ColorConsole plugin) {
+    public ColorPluginAppender(Appender oldAppender, ColorConsoleBukkit plugin) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
 
         this.plugin = plugin;
@@ -51,7 +51,10 @@ public class ColorPluginAppender extends AbstractAppender {
             return message;
         }
 
-        String levelColor = format(plugin.getConfig().getString(level));
+        String levelColor = "";
+        if (plugin.getConfig().getBoolean("colorLoggingLevel")) {
+            levelColor = format(plugin.getConfig().getString(level));
+        }
 
         int startTag = message.indexOf('[') + 1;
         int endTag = message.indexOf(']', startTag);

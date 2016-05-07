@@ -1,4 +1,4 @@
-package com.github.games647.colorconsole;
+package com.github.games647.colorconsole.bukkit;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -15,7 +15,7 @@ import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ColorConsole extends JavaPlugin {
+public class ColorConsoleBukkit extends JavaPlugin {
 
     private Layout<? extends Serializable> oldLayout;
 
@@ -36,6 +36,7 @@ public class ColorConsole extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        //restore the old format
         Appender terminalAppender = getTerminalAppender();
         Logger rootLogger = ((Logger) LogManager.getRootLogger());
 

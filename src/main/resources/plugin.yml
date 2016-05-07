@@ -2,7 +2,7 @@
 # ${-} are variables from Maven (pom.xml) which will be replaced after the build
 name: ${project.name}
 version: ${project.version}
-main: ${project.groupId}.${project.artifactId}.${project.name}
+main: ${project.groupId}.${project.artifactId}.bukkit.${project.name}Bukkit
 
 # meta informations for plugin managers
 authors: [games647, 'https://github.com/games647/ColorConsole/graphs/contributors']
