@@ -24,7 +24,7 @@ logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 # Log Level Colors
 FATAL: red blink
 ERROR: red
-WARN: yellow bold
+WARN: yellow bold BG_Blue
 INFO: gray
 DEBUG: green bold
 TRACE: blue
@@ -48,6 +48,10 @@ P-Vault: magenta
 # Default                       |
 
 # Available styling options
-# blink
-# bold
-# underline
+# blink         | Blinking characters
+# bold          | Bold
+# underline     | Underlined characters
+# reverse       | Reverse video
+# dim           | Dimmed or faint characters
+# italic        | italic
+# hidden        |

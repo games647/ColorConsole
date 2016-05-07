@@ -8,6 +8,8 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
+import org.fusesource.jansi.AnsiRenderer;
+import org.fusesource.jansi.AnsiRenderer.Code;
 
 public class ColorPluginAppender extends AbstractAppender {
 
@@ -55,7 +57,7 @@ public class ColorPluginAppender extends AbstractAppender {
         int endTag = message.indexOf(']', startTag);
 
         String pluginName = message.substring(startTag, endTag);
-        String pluginColor = plugin.getConfig().getString("P-" + pluginName, defaultPluginColor);
+        String pluginColor = plugin.getConfig().getString("P-" + pluginName);
         if (pluginColor == null) {
             pluginColor = defaultPluginColor;
         } else {
@@ -69,18 +71,40 @@ public class ColorPluginAppender extends AbstractAppender {
         String[] formatParts = pluginFormat.split(" ");
         Ansi ansi = Ansi.ansi();
         for (String format : formatParts) {
-            if (format.equalsIgnoreCase("blink")) {
+            for (Code ansiCode : AnsiRenderer.Code.values()) {
+                if (ansiCode.name().equalsIgnoreCase(format)) {
+                    if (ansiCode.isAttribute()) {
+                        ansi.a(ansiCode.getAttribute());
+                    } else if (ansiCode.isBackground()) {
+                        ansi.bg(ansiCode.getColor());
+                    } else {
+                        ansi.fg(ansiCode.getColor());
+                    }
+                }
+            }
+
+            if ("blink".equalsIgnoreCase(format)) {
                 ansi.a(Attribute.BLINK_SLOW);
                 continue;
             }
 
-            if (format.equalsIgnoreCase("bold")) {
-                ansi.a(Attribute.INTENSITY_BOLD);
+            if ("strikethrough".equalsIgnoreCase(format)) {
+                ansi.a(Attribute.STRIKETHROUGH_ON);
                 continue;
             }
 
-            if (format.equalsIgnoreCase("underline")) {
-                ansi.a(Attribute.UNDERLINE);
+            if ("hidden".equalsIgnoreCase(format)) {
+                ansi.a(Attribute.CONCEAL_OFF);
+                continue;
+            }
+
+            if ("dim".equalsIgnoreCase(format)) {
+                ansi.a(Attribute.INTENSITY_FAINT);
+                continue;
+            }
+
+            if ("reverse".equalsIgnoreCase(format)) {
+                ansi.a(Attribute.NEGATIVE_ON);
                 continue;
             }
 
