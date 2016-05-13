@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>ColorConsole</name>
-    <version>1.5</version>
+    <version>1.6</version>
     <inceptionYear>2016</inceptionYear>
     <url>http://dev.bukkit.org/bukkit-plugins/colorconsole/</url>
     <description>
@@ -89,6 +89,12 @@
             <id>RYRED-REPO</id>
             <url>http://mvn.ryred.co/repository/snapshots/</url>
         </repository>
+
+        <!--Sponge-API-->
+        <repository>
+            <id>sponge-repo</id>
+            <url>http://repo.spongepowered.org/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -105,6 +111,14 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
             <version>1.9-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.spongepowered</groupId>
+            <artifactId>spongeapi</artifactId>
+            <version>4.1.0-SNAPSHOT</version>
+            <type>jar</type>
             <scope>provided</scope>
         </dependency>
 
