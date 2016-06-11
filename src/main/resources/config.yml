@@ -32,9 +32,14 @@ TRACE: blue
 # Plugin Colors
 PLUGIN: blue
 P-Essentials: green
+P-LagMonitor: red
 P-WorldEdit: red
+P-FastLogin: cyan
 P-WorldGuard: cyan
 P-Vault: magenta
+P-ChangeSkin: yellow
+P-ScoreboardStats: white
+P-mcMMOAction: blue
 
 # Available foreground colors   | Available background colors
 # Black                         |   BG_Black

@@ -1,11 +1,18 @@
 package com.github.games647.colorconsole.bukkit;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+
+import java.util.Set;
+
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.AnsiRenderer;
@@ -20,6 +27,8 @@ public class ColorPluginAppender extends AbstractAppender {
     private final String reset = Ansi.ansi().a(Attribute.RESET).toString();
     private final String defaultPluginColor;
 
+    private final Set<String> pluginNames;
+
     public ColorPluginAppender(Appender oldAppender, ColorConsoleBukkit plugin) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
 
@@ -27,6 +36,7 @@ public class ColorPluginAppender extends AbstractAppender {
 
         this.oldAppender = oldAppender;
         this.defaultPluginColor = format(plugin.getConfig().getString("PLUGIN"));
+        this.pluginNames = loadPluginNames();
     }
 
     @Override
@@ -36,8 +46,8 @@ public class ColorPluginAppender extends AbstractAppender {
                     , event.getLevel().name()));
 
             LogEvent newEvent = new Log4jLogEvent(event.getLoggerName(), event.getMarker(), event.getFQCN()
-                    , event.getLevel(), newMessage, event.getThrown(), event.getContextMap()
-                    , event.getContextStack(), event.getThreadName(), event.getSource(), event.getMillis());
+                    , event.getLevel(), newMessage, event.getThrown(), event.getContextMap(), event.getContextStack()
+                    , event.getThreadName(), event.getSource(), event.getMillis());
             oldAppender.append(newEvent);
         }
     }
@@ -60,6 +70,11 @@ public class ColorPluginAppender extends AbstractAppender {
         int endTag = message.indexOf(']', startTag);
 
         String pluginName = message.substring(startTag, endTag);
+        if (!pluginNames.contains(pluginName)) {
+            //it's not a plugin tag -> cancel
+            return message;
+        }
+
         String pluginColor = plugin.getConfig().getString("P-" + pluginName);
         if (pluginColor == null) {
             pluginColor = defaultPluginColor;
@@ -120,5 +135,15 @@ public class ColorPluginAppender extends AbstractAppender {
         }
 
         return ansi.toString();
+    }
+
+    private Set<String> loadPluginNames() {
+        Builder<String> setBuilder = ImmutableSet.builder();
+        for (Plugin bukkitPlugin : Bukkit.getPluginManager().getPlugins()) {
+            String loggerName = bukkitPlugin.getDescription().getName();
+            setBuilder.add(loggerName);
+        }
+
+        return setBuilder.build();
     }
 }

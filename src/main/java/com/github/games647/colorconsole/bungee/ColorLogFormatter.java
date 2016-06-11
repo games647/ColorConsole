@@ -1,12 +1,19 @@
 package com.github.games647.colorconsole.bungee;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
+
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
@@ -23,18 +30,20 @@ public class ColorLogFormatter extends Formatter {
     private final String reset = Ansi.ansi().a(Attribute.RESET).toString();
     private final String defaultPluginColor;
 
+    private final Set<String> pluginNames;
+
     public ColorLogFormatter(ColorConsoleBungee plugin, Formatter oldFormatter) {
         this.plugin = plugin;
         this.oldFormatter = oldFormatter;
 
         this.defaultPluginColor = format(plugin.getConfiguration().getString("PLUGIN"));
+        this.pluginNames = loadPluginNames();
     }
 
     @Override
     public String format(LogRecord record) {
         StringBuilder formatted = new StringBuilder();
 
-        String levelName = record.getLevel().getName();
         String levelColor = "";
         if (plugin.getConfiguration().getBoolean("colorLoggingLevel")) {
             String log4JName = translateToLog4JName(record.getLevel());
@@ -78,6 +87,11 @@ public class ColorLogFormatter extends Formatter {
         int endTag = message.indexOf(']', startTag);
 
         String pluginName = message.substring(startTag, endTag);
+        if (!pluginNames.contains(pluginName)) {
+            //it's not a plugin tag -> cancel
+            return message;
+        }
+
         String pluginColor = plugin.getConfiguration().getString("P-" + pluginName);
         if (pluginColor == null || pluginColor.isEmpty()) {
             pluginColor = defaultPluginColor;
@@ -152,5 +166,15 @@ public class ColorLogFormatter extends Formatter {
         } else {
             return "TRACE";
         }
+    }
+
+    private Set<String> loadPluginNames() {
+        Builder<String> setBuilder = ImmutableSet.builder();
+        for (Plugin bungeePlugin : ProxyServer.getInstance().getPluginManager().getPlugins()) {
+            String loggerName = bungeePlugin.getDescription().getName();
+            setBuilder.add(loggerName);
+        }
+
+        return setBuilder.build();
     }
 }
