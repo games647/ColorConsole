@@ -60,3 +60,9 @@ P-mcMMOAction: blue
 # dim           | Dimmed or faint characters
 # italic        | italic
 # hidden        |
+
+# Hides the log message if it contains one or more of the following texts
+# The texts are case-sensitive
+hide-messages:
+    - 'ThisIsATest'
+    - 'SecondTest'

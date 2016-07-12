@@ -28,6 +28,7 @@ public class ColorPluginAppender extends AbstractAppender {
     private final String defaultPluginColor;
 
     private final Set<String> pluginNames;
+    private final Set<String> ignoreMessages;
 
     public ColorPluginAppender(Appender oldAppender, ColorConsoleBukkit plugin) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
@@ -37,17 +38,25 @@ public class ColorPluginAppender extends AbstractAppender {
         this.oldAppender = oldAppender;
         this.defaultPluginColor = format(plugin.getConfig().getString("PLUGIN"));
         this.pluginNames = loadPluginNames();
+        this.ignoreMessages = ImmutableSet.copyOf(plugin.getConfig().getStringList("hide-messages"));
     }
 
     @Override
-    public void append(LogEvent event) {
+    public void append(LogEvent logEvent) {
         if (oldAppender.isStarted()) {
-            Message newMessage = new SimpleMessage(colorizePluginTag(event.getMessage().getFormattedMessage()
-                    , event.getLevel().name()));
+            String oldMessage = logEvent.getMessage().getFormattedMessage();
+            for (String ignore : ignoreMessages) {
+                if (oldMessage.contains(ignore)) {
+                    return;
+                }
+            }
 
-            LogEvent newEvent = new Log4jLogEvent(event.getLoggerName(), event.getMarker(), event.getFQCN()
-                    , event.getLevel(), newMessage, event.getThrown(), event.getContextMap(), event.getContextStack()
-                    , event.getThreadName(), event.getSource(), event.getMillis());
+            Message newMessage = new SimpleMessage(colorizePluginTag(oldMessage, logEvent.getLevel().name()));
+
+            LogEvent newEvent = new Log4jLogEvent(logEvent.getLoggerName(), logEvent.getMarker(), logEvent.getFQCN()
+                    , logEvent.getLevel(), newMessage, logEvent.getThrown()
+                    , logEvent.getContextMap(), logEvent.getContextStack()
+                    , logEvent.getThreadName(), logEvent.getSource(), logEvent.getMillis());
             oldAppender.append(newEvent);
         }
     }

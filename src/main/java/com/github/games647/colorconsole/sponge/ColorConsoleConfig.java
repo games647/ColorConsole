@@ -3,6 +3,7 @@ package com.github.games647.colorconsole.sponge;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
+import java.util.Set;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 
@@ -55,6 +56,10 @@ public class ColorConsoleConfig {
     @Setting(comment = "Custom plugin colors")
     private Map<String, String> pluginColors;
 
+    @Setting(comment = "Hides the log message if it contains one or more of the following texts\n"
+            + "The texts are case-sensitive")
+    private Set<String> hideMessages;
+
     public boolean isColorPluginTag() {
         return colorPluginTag;
     }
@@ -77,5 +82,9 @@ public class ColorConsoleConfig {
 
     public Map<String, String> getPluginColors() {
         return pluginColors;
+    }
+
+    public Set<String> getHideMessages() {
+        return hideMessages;
     }
 }

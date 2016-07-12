@@ -1,5 +1,7 @@
 package com.github.games647.colorconsole.sponge;
 
+import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
@@ -18,6 +20,8 @@ public class ColorPluginAppender extends AbstractAppender {
     private final String reset = Ansi.ansi().a(Attribute.RESET).toString();
     private final String defaultPluginColor;
 
+    private final Set<String> ignoreMessages;
+
     public ColorPluginAppender(Appender oldAppender, ColorConsoleSponge plugin) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
 
@@ -25,12 +29,20 @@ public class ColorPluginAppender extends AbstractAppender {
 
         this.oldAppender = oldAppender;
         this.defaultPluginColor = format(plugin.getConfig().getDefaultPluginColor());
+        this.ignoreMessages = ImmutableSet.copyOf(plugin.getConfig().getHideMessages());
     }
 
     @Override
-    public void append(LogEvent event) {
+    public void append(LogEvent logEvent) {
         if (oldAppender.isStarted()) {
-            String loggerName = event.getLoggerName();
+            String oldMessage = logEvent.getMessage().getFormattedMessage();
+            for (String ignore : ignoreMessages) {
+                if (oldMessage.contains(ignore)) {
+                    return;
+                }
+            }
+
+            String loggerName = logEvent.getLoggerName();
             String pluginColor = plugin.getConfig().getPluginColors().get(loggerName);
             if (pluginColor == null) {
                 pluginColor = defaultPluginColor;
@@ -40,14 +52,14 @@ public class ColorPluginAppender extends AbstractAppender {
 
             String levelColor = "";
             if (plugin.getConfig().isColorLoggingLevel()) {
-                levelColor = format(plugin.getConfig().getLevelColors().get(event.getLevel().name()));
+                levelColor = format(plugin.getConfig().getLevelColors().get(logEvent.getLevel().name()));
             }
 
             String newLoggerName = pluginColor + loggerName + reset + levelColor;
 
-            LogEvent newEvent = new Log4jLogEvent(newLoggerName, event.getMarker(), event.getFQCN()
-                    , event.getLevel(), event.getMessage(), event.getThrown(), event.getContextMap()
-                    , event.getContextStack(), event.getThreadName(), event.getSource(), event.getMillis());
+            LogEvent newEvent = new Log4jLogEvent(newLoggerName, logEvent.getMarker(), logEvent.getFQCN()
+                    , logEvent.getLevel(), logEvent.getMessage(), logEvent.getThrown(), logEvent.getContextMap()
+                    , logEvent.getContextStack(), logEvent.getThreadName(), logEvent.getSource(), logEvent.getMillis());
             oldAppender.append(newEvent);
         }
     }

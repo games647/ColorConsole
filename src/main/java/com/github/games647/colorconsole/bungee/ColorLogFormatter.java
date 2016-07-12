@@ -31,6 +31,7 @@ public class ColorLogFormatter extends Formatter {
     private final String defaultPluginColor;
 
     private final Set<String> pluginNames;
+    private final Set<String> ignoreMessages;
 
     public ColorLogFormatter(ColorConsoleBungee plugin, Formatter oldFormatter) {
         this.plugin = plugin;
@@ -38,11 +39,19 @@ public class ColorLogFormatter extends Formatter {
 
         this.defaultPluginColor = format(plugin.getConfiguration().getString("PLUGIN"));
         this.pluginNames = loadPluginNames();
+        this.ignoreMessages = ImmutableSet.copyOf(plugin.getConfiguration().getStringList("hide-messages"));
     }
 
     @Override
     public String format(LogRecord record) {
         StringBuilder formatted = new StringBuilder();
+
+        String message = oldFormatter.formatMessage(record);
+        for (String ignore : ignoreMessages) {
+            if (message.contains(ignore)) {
+                return "";
+            }
+        }
 
         String levelColor = "";
         if (plugin.getConfiguration().getBoolean("colorLoggingLevel")) {
@@ -57,7 +66,6 @@ public class ColorLogFormatter extends Formatter {
         formatted.append(record.getLevel().getName());
         formatted.append("] ");
 
-        String message = oldFormatter.formatMessage(record);
         if (plugin.getConfiguration().getBoolean("colorPluginTag")) {
             message = colorizePluginTag(message, levelColor);
         }

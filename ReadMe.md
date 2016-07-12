@@ -10,6 +10,7 @@ This lightweight plugin to make your console more colorful. It colorize the mess
 
 * Lightweight
 * Different colors for different log levels
+* Ignores specified log messages
 * Custom logFormat
 * Colorize plugin tags (customizable)
 * Easy to use config
