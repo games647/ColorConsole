@@ -86,8 +86,8 @@
 
         <!--BungeeCord with also the part outside the API-->
         <repository>
-            <id>RYRED-REPO</id>
-            <url>http://mvn.ryred.co/repository/snapshots/</url>
+            <id>myplayplanet-REPO</id>
+            <url>http://maven.myplayplanet.net/</url>
         </repository>
 
         <!--Sponge-API-->
@@ -110,14 +110,14 @@
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-proxy</artifactId>
-            <version>1.9-SNAPSHOT</version>
+            <version>1.8-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
+            <version>5.0.0-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
