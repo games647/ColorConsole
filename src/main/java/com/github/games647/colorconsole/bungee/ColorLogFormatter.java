@@ -61,7 +61,7 @@ public class ColorLogFormatter extends Formatter {
 
         formatted.append(levelColor);
 
-        formatted.append(this.date.format(Long.valueOf(record.getMillis())));
+        formatted.append(this.date.format(record.getMillis()));
         formatted.append(" [");
         formatted.append(record.getLevel().getName());
         formatted.append("] ");
