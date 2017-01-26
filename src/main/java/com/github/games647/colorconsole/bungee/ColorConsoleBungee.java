@@ -1,20 +1,21 @@
 package com.github.games647.colorconsole.bungee;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.log.ColouredWriter;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ColorConsoleBungee extends Plugin {
 
@@ -72,10 +73,11 @@ public class ColorConsoleBungee extends Plugin {
 
     private void saveDefaultConfig() {
         getDataFolder().mkdir();
-        File configFile = new File(getDataFolder(), "config.yml");
-        if (!configFile.exists()) {
+
+        Path configFile = getDataFolder().toPath().resolve("config.yml");
+        if (!Files.exists(configFile)) {
             try (InputStream in = getResourceAsStream("config.yml")) {
-                Files.copy(in, configFile.toPath());
+                Files.copy(in, configFile);
             } catch (IOException ioExc) {
                 getLogger().log(Level.SEVERE, "Error saving default config", ioExc);
             }

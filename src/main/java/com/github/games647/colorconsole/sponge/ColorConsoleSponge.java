@@ -2,17 +2,12 @@ package com.github.games647.colorconsole.sponge;
 
 import com.google.inject.Inject;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
-
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -20,12 +15,17 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 
 @Plugin(id = "colorconsole", name = "ColorConsole", version = "1.6"
         , url = "https://github.com/games647/ColorConsole/"
@@ -36,7 +36,7 @@ public class ColorConsoleSponge {
 
     @Inject
     @DefaultConfig(sharedRoot = true)
-    private File configFile;
+    private Path configFile;
 
     @Inject
     @DefaultConfig(sharedRoot = true)
@@ -64,7 +64,7 @@ public class ColorConsoleSponge {
 
         rootNode = configManager.createEmptyNode();
         ConfigurationLoader<CommentedConfigurationNode> configLoader = HoconConfigurationLoader.builder()
-                .setPath(configFile.toPath()).build();
+                .setPath(configFile).build();
         try {
             configMapper = ObjectMapper
                     .forClass(ColorConsoleConfig.class).bindToNew();
