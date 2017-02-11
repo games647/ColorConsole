@@ -75,7 +75,7 @@ public class ColorConsoleBungee extends Plugin {
         getDataFolder().mkdir();
 
         Path configFile = getDataFolder().toPath().resolve("config.yml");
-        if (!Files.exists(configFile)) {
+        if (Files.notExists(configFile)) {
             try (InputStream in = getResourceAsStream("config.yml")) {
                 Files.copy(in, configFile);
             } catch (IOException ioExc) {
