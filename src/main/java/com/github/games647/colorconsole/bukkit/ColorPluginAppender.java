@@ -91,7 +91,7 @@ public class ColorPluginAppender extends AbstractAppender {
             pluginColor = format(pluginColor);
         }
 
-        return reset + '[' + pluginColor + pluginName + reset + ']' + levelColor + message.substring(endTag + 1);
+        return reset + '[' + pluginColor + pluginName + reset + ']' + levelColor + message.substring(endTag + 1) + reset;
     }
 
     private String format(String pluginFormat) {
