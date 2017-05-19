@@ -1,6 +1,6 @@
 # ColorConsole
 
-![colorful log example](http://i.imgur.com/lLFebZV.png)
+![colorful log example](https://www.spigotmc.org/attachments/color-console-png.241391/)
 
 ## Description
 
