@@ -27,7 +27,7 @@ import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 
-@Plugin(id = "colorconsole", name = "ColorConsole", version = "1.6"
+@Plugin(id = "colorconsole", name = "ColorConsole", version = "1.9"
         , url = "https://github.com/games647/ColorConsole/"
         , description = "Print colorful console messages depending on the logging level")
 public class ColorConsoleSponge {
@@ -89,13 +89,13 @@ public class ColorConsoleSponge {
         
         String logFormat = configMapper.getInstance().getLogFormat();
         if (configMapper.getInstance().isColorLoggingLevel()) {
-            logFormat = "%highlight{" + logFormat + "}{"
+            logFormat = "[%highlight{%d{HH:mm:ss} %level}{" + logFormat + "}{"
                     + "FATAL=" + configMapper.getInstance().getLevelColors().get("FATAL") + ", "
                     + "ERROR=" + configMapper.getInstance().getLevelColors().get("ERROR") + ", "
                     + "WARN=" + configMapper.getInstance().getLevelColors().get("WARN") + ", "
                     + "INFO=" + configMapper.getInstance().getLevelColors().get("INFO") + ", "
                     + "DEBUG=" + configMapper.getInstance().getLevelColors().get("DEBUG") + ", "
-                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}";
+                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}] %msg%n";
         }
 
         PatternLayout layout = PatternLayout

@@ -66,6 +66,8 @@ public class ColorLogFormatter extends Formatter {
         formatted.append(record.getLevel().getName());
         formatted.append("] ");
 
+        formatted.append(Ansi.ansi().reset().toString());
+
         if (plugin.getConfiguration().getBoolean("colorPluginTag")) {
             message = colorizePluginTag(message, levelColor);
         }
