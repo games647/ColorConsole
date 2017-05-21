@@ -25,7 +25,7 @@ logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 FATAL: red blink
 ERROR: red
 WARN: yellow bold
-INFO: default
+INFO: green
 DEBUG: green bold
 TRACE: blue
 

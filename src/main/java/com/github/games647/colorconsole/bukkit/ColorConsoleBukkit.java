@@ -63,13 +63,13 @@ public class ColorConsoleBukkit extends JavaPlugin {
         oldLayout = terminalAppender.getLayout();
         String logFormat = getConfig().getString("logFormat");
         if (getConfig().getBoolean("colorLoggingLevel")) {
-            logFormat = "[%highlight{%d{HH:mm:ss} %level}{" + logFormat + "}{"
+            logFormat = logFormat.replace("%level",  "%highlight{%level}{"
                     + "FATAL=" + getConfig().getString("FATAL") + ", "
                     + "ERROR=" + getConfig().getString("ERROR") + ", "
                     + "WARN=" + getConfig().getString("WARN") + ", "
                     + "INFO=" + getConfig().getString("INFO") + ", "
                     + "DEBUG=" + getConfig().getString("DEBUG") + ", "
-                    + "TRACE=" + getConfig().getString("TRACE") + "}] %msg%n";
+                    + "TRACE=" + getConfig().getString("TRACE") + "}");
         }
 
         PatternLayout layout = PatternLayout

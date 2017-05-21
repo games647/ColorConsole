@@ -85,13 +85,13 @@ public class ColorConsoleSponge {
         
         String logFormat = configMapper.getInstance().getLogFormat();
         if (configMapper.getInstance().isColorLoggingLevel()) {
-            logFormat = "[%highlight{%d{HH:mm:ss} %level}{" + logFormat + "}{"
+            logFormat = logFormat.replace("%level",  "%highlight{%level}{"
                     + "FATAL=" + configMapper.getInstance().getLevelColors().get("FATAL") + ", "
                     + "ERROR=" + configMapper.getInstance().getLevelColors().get("ERROR") + ", "
                     + "WARN=" + configMapper.getInstance().getLevelColors().get("WARN") + ", "
                     + "INFO=" + configMapper.getInstance().getLevelColors().get("INFO") + ", "
                     + "DEBUG=" + configMapper.getInstance().getLevelColors().get("DEBUG") + ", "
-                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}] %msg%n";
+                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}");
         }
 
         PatternLayout layout = PatternLayout
