@@ -54,10 +54,6 @@ public class ColorConsoleSponge {
         return configMapper.getInstance();
     }
 
-    public CommentedConfigurationNode getConfigRaw() {
-        return rootNode;
-    }
-
     @Listener //During this state, the plugin gets ready for initialization. Logger and config
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
         logger.info("Setting up config");
@@ -106,7 +102,8 @@ public class ColorConsoleSponge {
             org.apache.logging.log4j.core.Logger rootLogger = ((org.apache.logging.log4j.core.Logger) LogManager
                     .getRootLogger());
 
-            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, this);
+            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
+            pluginAppender.initPluginColors(getConfig().getPluginColors(), getConfig().getDefaultPluginColor());
             pluginAppender.start();
 
             rootLogger.removeAppender(terminalAppender);

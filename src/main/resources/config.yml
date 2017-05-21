@@ -30,7 +30,12 @@ DEBUG: green bold
 TRACE: blue
 
 # Plugin Colors
+
+# This can be the default color or "random" it gives each plugin (besides the ones specified below) a different color
+# which keeps the same until the server shuts down.
 PLUGIN: blue
+# Plugin: random
+
 P-Essentials: green
 P-LagMonitor: red
 P-WorldEdit: red

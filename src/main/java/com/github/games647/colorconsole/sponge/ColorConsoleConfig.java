@@ -50,7 +50,7 @@ public class ColorConsoleConfig {
     @Setting(comment = "Log Level Colors")
     private Map<String, String> levelColors;
 
-    @Setting(comment = "Plugin Colors")
+    @Setting(comment = "Plugin Colors or random")
     private String defaultPluginColor = "blue";
 
     @Setting(comment = "Custom plugin colors")

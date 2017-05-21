@@ -1,12 +1,5 @@
 package com.github.games647.colorconsole.bungee;
 
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import net.md_5.bungee.log.ColouredWriter;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +9,13 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
+import net.md_5.bungee.log.ColouredWriter;
 
 public class ColorConsoleBungee extends Plugin {
 
@@ -66,7 +66,10 @@ public class ColorConsoleBungee extends Plugin {
         for (Handler handler : handlers) {
             if (handler instanceof ColouredWriter) {
                 Formatter oldFormatter = handler.getFormatter();
-                handler.setFormatter(new ColorLogFormatter(this, oldFormatter));
+
+                ColorLogFormatter newFormatter = new ColorLogFormatter(this, oldFormatter);
+                newFormatter.initPluginColors(getConfiguration().getString("PLUGIN"));
+                handler.setFormatter(newFormatter);
             }
         }
     }

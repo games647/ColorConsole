@@ -1,8 +1,11 @@
 package com.github.games647.colorconsole.bukkit;
 
+import com.google.common.collect.Maps;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,8 +33,6 @@ public class ColorConsoleBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
-
-        installLogFormat();
     }
 
     @Override
@@ -78,7 +79,17 @@ public class ColorConsoleBukkit extends JavaPlugin {
         if (getConfig().getBoolean("colorPluginTag")) {
             Logger rootLogger = ((Logger) LogManager.getRootLogger());
 
-            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, this);
+            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
+            Map<String, String> colors = Maps.newHashMap();
+            for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
+                if (!entry.getKey().startsWith("P-")) {
+                    continue;
+                }
+
+                colors.put(entry.getKey().replace("P-", ""), (String) entry.getValue());
+            }
+
+            pluginAppender.initPluginColors(colors, getConfig().getString("PLUGIN"));
             pluginAppender.start();
 
             rootLogger.removeAppender(terminalAppender);
