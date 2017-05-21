@@ -46,6 +46,10 @@ P-ChangeSkin: yellow
 P-ScoreboardStats: white
 P-mcMMOAction: blue
 
+# How should the time be highlighted
+# Like below it could also be default which means it's the default font color depending on your terminal settings.
+dateStyle: cyan
+
 # Available foreground colors   | Available background colors
 # Black                         |   BG_Black
 # Red                           |   BG_Red

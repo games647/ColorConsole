@@ -72,6 +72,9 @@ public class ColorConsoleBukkit extends JavaPlugin {
                     + "TRACE=" + getConfig().getString("TRACE") + "}");
         }
 
+        String dateStyle = getConfig().getString("dateStyle");
+        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
+
         PatternLayout layout = PatternLayout
                 .createLayout(logFormat, new DefaultConfiguration(), null, Charset.defaultCharset().name(), "true");
         setLayout(layout);

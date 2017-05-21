@@ -94,6 +94,9 @@ public class ColorConsoleSponge {
                     + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}");
         }
 
+        String dateStyle = configMapper.getInstance().getDateStyle();
+        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
+
         PatternLayout layout = PatternLayout
                 .createLayout(logFormat, new DefaultConfiguration(), null, Charset.defaultCharset().name(), "true");
         setLayout(layout);

@@ -56,6 +56,11 @@ public class ColorConsoleConfig {
     @Setting(comment = "Custom plugin colors")
     private Map<String, String> pluginColors;
 
+    @Setting(comment = "How should the time be highlighted\n" +
+            "Like below it could also be default which means it's the default font color depending on " +
+            "your terminal settings.")
+    private String dateStyle;
+
     @Setting(comment = "Hides the log message if it contains one or more of the following texts\n"
             + "The texts are case-sensitive")
     private Set<String> hideMessages;
@@ -86,5 +91,9 @@ public class ColorConsoleConfig {
 
     public Set<String> getHideMessages() {
         return hideMessages;
+    }
+
+    public String getDateStyle() {
+        return dateStyle;
     }
 }
