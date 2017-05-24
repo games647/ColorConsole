@@ -1,5 +1,6 @@
 package com.github.games647.colorconsole.common;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.message.Message;
 public abstract class ColorAppender extends AbstractAppender {
 
     private final Appender oldAppender;
+    private Method loggerClassGetter;
 
     protected final CommonFormatter formatter;
 
@@ -20,6 +22,15 @@ public abstract class ColorAppender extends AbstractAppender {
 
         this.oldAppender = oldAppender;
         this.formatter = new CommonFormatter(hideMessages, colorizeTag);
+
+        for (Method method : LogEvent.class.getDeclaredMethods()) {
+            String methodName = method.getName();
+            if (methodName.equalsIgnoreCase("getLoggerFqcn")
+                    || methodName.equalsIgnoreCase("getFQCN")) {
+                loggerClassGetter = method;
+                method.setAccessible(true);
+            }
+        }
     }
 
     public void initPluginColors(Map<String, String> configColors, String def) {
@@ -43,10 +54,18 @@ public abstract class ColorAppender extends AbstractAppender {
     protected abstract Collection<String> loadPluginNames();
 
     protected LogEvent clone(LogEvent oldEvent, String loggerName, Message message) {
-        return new Log4jLogEvent(loggerName, oldEvent.getMarker(), oldEvent.getFQCN()
-                , oldEvent.getLevel(), message, oldEvent.getThrown()
-                , oldEvent.getContextMap(), oldEvent.getContextStack()
-                , oldEvent.getThreadName(), oldEvent.getSource(), oldEvent.getMillis());
+        String className = null;
+        if (loggerClassGetter != null) {
+            try {
+                className = (String) loggerClassGetter.invoke(oldEvent);
+            } catch (ReflectiveOperationException refEx) {
+                //if this method cannot be found then the other methods wouldn't work neither
+                loggerClassGetter = null;
+            }
+        }
+
+        return new Log4jLogEvent(loggerName, oldEvent.getMarker(), className
+                , oldEvent.getLevel(), message, oldEvent.getThrown());
     }
 
     public Appender getOldAppender() {

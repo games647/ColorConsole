@@ -1,10 +1,9 @@
 package com.github.games647.colorconsole.bukkit;
 
+import com.github.games647.colorconsole.common.CommonLogInstaller;
 import com.google.common.collect.Maps;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -12,13 +11,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.DefaultConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ColorConsoleBukkit extends JavaPlugin {
+
+    private static String TERMINAL_NAME = "TerminalConsole";
 
     private Layout<? extends Serializable> oldLayout;
 
@@ -38,7 +36,7 @@ public class ColorConsoleBukkit extends JavaPlugin {
     @Override
     public void onDisable() {
         //restore the old format
-        Appender terminalAppender = getTerminalAppender();
+        Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
         Logger rootLogger = ((Logger) LogManager.getRootLogger());
 
         ColorPluginAppender colorPluginAppender = null;
@@ -54,11 +52,15 @@ public class ColorConsoleBukkit extends JavaPlugin {
             rootLogger.addAppender(colorPluginAppender.getOldAppender());
         }
 
-        setLayout(oldLayout);
+        try {
+            CommonLogInstaller.setLayout(oldLayout, terminalAppender);
+        } catch (ReflectiveOperationException ex) {
+            getLogger().log(Level.WARNING, "Cannot revert log format", ex);
+        }
     }
 
     private void installLogFormat() {
-        Appender terminalAppender = getTerminalAppender();
+        Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
 
         oldLayout = terminalAppender.getLayout();
         String logFormat = getConfig().getString("logFormat");
@@ -75,9 +77,13 @@ public class ColorConsoleBukkit extends JavaPlugin {
         String dateStyle = getConfig().getString("dateStyle");
         logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
 
-        PatternLayout layout = PatternLayout
-                .createLayout(logFormat, new DefaultConfiguration(), null, Charset.defaultCharset().name(), "true");
-        setLayout(layout);
+        try {
+            PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
+            CommonLogInstaller.setLayout(layout, terminalAppender);
+        } catch (ReflectiveOperationException ex) {
+            getLogger().log(Level.WARNING, "Cannot install log format", ex);
+        }
+
 
         if (getConfig().getBoolean("colorPluginTag")) {
             Logger rootLogger = ((Logger) LogManager.getRootLogger());
@@ -98,24 +104,5 @@ public class ColorConsoleBukkit extends JavaPlugin {
             rootLogger.removeAppender(terminalAppender);
             rootLogger.addAppender(pluginAppender);
         }
-    }
-
-    private void setLayout(Layout<? extends Serializable> layout) {
-        Appender terminalAppender = getTerminalAppender();
-
-        try {
-            Field field = terminalAppender.getClass().getSuperclass().getDeclaredField("layout");
-            field.setAccessible(true);
-            field.set(terminalAppender, layout);
-        } catch (Exception ex) {
-            getLogger().log(Level.SEVERE, "Failed to install log format", ex);
-        }
-    }
-
-    private Appender getTerminalAppender() {
-        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-        Configuration conf = ctx.getConfiguration();
-
-        return conf.getAppenders().get("TerminalConsole");
     }
 }
