@@ -2,11 +2,12 @@ package com.github.games647.colorconsole.common;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.regex.Pattern;
+
 import org.apache.logging.log4j.core.pattern.AnsiEscape;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
@@ -15,15 +16,16 @@ import org.fusesource.jansi.AnsiRenderer;
 public class CommonFormatter {
 
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
-    private final Pattern tagPattern = Pattern.compile("\\[.{1,}\\]");
 
-    private Map<String, String> pluginColors;
     private final Set<String> ignoreMessages;
     private final boolean colorizeTag;
+    private final boolean truncateColor;
+    private Map<String, String> pluginColors;
 
-    public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag) {
+    public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag, boolean truncateColor) {
         this.ignoreMessages = ImmutableSet.copyOf(ignoreMessages);
         this.colorizeTag = colorizeTag;
+        this.truncateColor = truncateColor;
     }
 
     public boolean shouldIgnore(String message) {
@@ -55,15 +57,27 @@ public class CommonFormatter {
     }
 
     public String colorizePluginTag(String message) {
-        if (!message.contains("[") || !message.contains("]") || message.startsWith(AnsiEscape.CSI.getCode())) {
+        if (!message.contains("[") || !message.contains("]")) {
             return message;
         }
 
-        int startTag = message.indexOf('[') + 1;
-        int endTag = message.indexOf(']', startTag);
+        String newMessage = message;
 
-        String pluginName = colorizePluginName(message.substring(startTag, endTag));
-        return '[' + pluginName + ']' + message.substring(endTag + 1);
+        String startingColorCode = "";
+        if (message.startsWith(AnsiEscape.CSI.getCode())) {
+            int endColor = message.indexOf(AnsiEscape.SUFFIX.getCode());
+
+            newMessage = message.substring(endColor + 1, message.length());
+            if (!truncateColor) {
+                startingColorCode = message.substring(0, endColor + 1);
+            }
+        }
+
+        int startTag = newMessage.indexOf('[') + 1;
+        int endTag = newMessage.indexOf(']', startTag);
+
+        String pluginName = colorizePluginName(newMessage.substring(startTag, endTag));
+        return '[' + pluginName + ']' + startingColorCode + newMessage.substring(endTag + 1);
     }
 
     public String colorizePluginName(String pluginName) {

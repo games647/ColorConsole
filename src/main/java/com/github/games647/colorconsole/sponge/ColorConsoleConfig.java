@@ -65,6 +65,9 @@ public class ColorConsoleConfig {
             + "The texts are case-sensitive")
     private Set<String> hideMessages;
 
+    @Setting(comment = "Removes color formatting if the complete message has color formatting")
+    private boolean truncateColor;
+
     public boolean isColorPluginTag() {
         return colorPluginTag;
     }
@@ -95,5 +98,9 @@ public class ColorConsoleConfig {
 
     public String getDateStyle() {
         return dateStyle;
+    }
+
+    public boolean isTruncateColor() {
+        return truncateColor;
     }
 }

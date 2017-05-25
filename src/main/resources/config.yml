@@ -75,3 +75,6 @@ dateStyle: cyan
 hide-messages:
     - 'ThisIsATest'
     - 'SecondTest'
+
+# Removes color formatting if the complete message has color formatting
+truncateColor: false

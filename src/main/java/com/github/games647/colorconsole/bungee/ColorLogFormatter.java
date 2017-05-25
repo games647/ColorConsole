@@ -32,7 +32,8 @@ public class ColorLogFormatter extends Formatter {
 
         List<String> ignoreMessages = plugin.getConfiguration().getStringList("hide-messages");
         boolean colorizeTag = plugin.getConfiguration().getBoolean("colorPluginTag");
-        this.formatter = new CommonFormatter(ignoreMessages, colorizeTag);
+        boolean truncateColor = plugin.getConfiguration().getBoolean("truncateColor", false);
+        this.formatter = new CommonFormatter(ignoreMessages, colorizeTag, truncateColor);
     }
 
     @Override

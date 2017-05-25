@@ -16,7 +16,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class ColorPluginAppender extends ColorAppender {
 
     public ColorPluginAppender(Appender oldAppender, FileConfiguration config) {
-        super(oldAppender, config.getStringList("hide-messages"), config.getBoolean("colorPluginTag"));
+        super(oldAppender
+                , config.getStringList("hide-messages")
+                , config.getBoolean("colorPluginTag")
+                , config.getBoolean("truncateColor"));
     }
 
     @Override

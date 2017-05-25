@@ -12,7 +12,7 @@ import org.spongepowered.api.Sponge;
 public class ColorPluginAppender extends ColorAppender {
 
     public ColorPluginAppender(Appender oldAppender, ColorConsoleConfig config) {
-        super(oldAppender, config.getHideMessages(), config.isColorPluginTag());
+        super(oldAppender, config.getHideMessages(), config.isColorPluginTag(), config.isTruncateColor());
     }
 
     @Override

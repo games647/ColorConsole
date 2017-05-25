@@ -2,11 +2,9 @@ package com.github.games647.colorconsole.bukkit;
 
 import com.github.games647.colorconsole.common.CommonLogInstaller;
 import com.google.common.collect.Maps;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -83,7 +81,6 @@ public class ColorConsoleBukkit extends JavaPlugin {
         } catch (ReflectiveOperationException ex) {
             getLogger().log(Level.WARNING, "Cannot install log format", ex);
         }
-
 
         if (getConfig().getBoolean("colorPluginTag")) {
             Logger rootLogger = ((Logger) LogManager.getRootLogger());
