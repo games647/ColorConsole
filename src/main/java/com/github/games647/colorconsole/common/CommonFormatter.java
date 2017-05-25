@@ -2,12 +2,12 @@ package com.github.games647.colorconsole.common;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-
+import java.util.regex.Pattern;
+import org.apache.logging.log4j.core.pattern.AnsiEscape;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.AnsiRenderer;
@@ -15,6 +15,7 @@ import org.fusesource.jansi.AnsiRenderer;
 public class CommonFormatter {
 
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
+    private final Pattern tagPattern = Pattern.compile("\\[.{1,}\\]");
 
     private Map<String, String> pluginColors;
     private final Set<String> ignoreMessages;
@@ -54,7 +55,7 @@ public class CommonFormatter {
     }
 
     public String colorizePluginTag(String message) {
-        if (!message.contains("[") || !message.contains("]")) {
+        if (!message.contains("[") || !message.contains("]") || message.startsWith(AnsiEscape.CSI.getCode())) {
             return message;
         }
 
