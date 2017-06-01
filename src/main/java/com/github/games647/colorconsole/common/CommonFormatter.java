@@ -8,13 +8,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.logging.log4j.core.pattern.AnsiEscape;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.AnsiRenderer;
 
 public class CommonFormatter {
 
+    //copied from AnsiEscape in order to provide compatibility with older minecraft versions
+    private static final String CSI = "\u001b[";
+    private static final String SUFFIX = "m";
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
 
     private final Set<String> ignoreMessages;
@@ -64,8 +66,8 @@ public class CommonFormatter {
         String newMessage = message;
 
         String startingColorCode = "";
-        if (message.startsWith(AnsiEscape.CSI.getCode())) {
-            int endColor = message.indexOf(AnsiEscape.SUFFIX.getCode());
+        if (message.startsWith(CSI)) {
+            int endColor = message.indexOf(SUFFIX);
 
             newMessage = message.substring(endColor + 1, message.length());
             if (!truncateColor) {
