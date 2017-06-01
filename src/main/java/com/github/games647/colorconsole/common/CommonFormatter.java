@@ -3,6 +3,7 @@ package com.github.games647.colorconsole.common;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
+import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiRenderer;
 
 public class CommonFormatter {
@@ -42,7 +44,9 @@ public class CommonFormatter {
 
     public void initPluginColors(Collection<String> plugins, Map<String, String> configColors, String def) {
         Random random = new Random();
-        Ansi.Color[] colors = Ansi.Color.values();
+        Color[] colors = Color.values();
+        //remove black, because it's often hard to read
+        colors = Arrays.copyOfRange(colors, 1, colors.length);
 
         ImmutableMap.Builder<String, String> colorBuilder = ImmutableMap.builder();
         for (String plugin : plugins) {

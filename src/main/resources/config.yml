@@ -33,6 +33,7 @@ TRACE: blue
 
 # This can be the default color or "random" it gives each plugin (besides the ones specified below) a different color
 # which keeps the same until the server shuts down.
+# Black is ignored by default, because it's often hard to read on the console
 PLUGIN: blue
 # Plugin: random
 
