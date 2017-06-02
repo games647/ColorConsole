@@ -18,11 +18,11 @@ public abstract class ColorAppender extends AbstractAppender {
     protected final CommonFormatter formatter;
 
     protected ColorAppender(Appender oldAppender, Collection<String> hideMessages
-            , boolean colorizeTag, boolean truncateColor) {
+            , boolean colorizeTag, boolean truncateColor, Map<String, String> levelColors) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
 
         this.oldAppender = oldAppender;
-        this.formatter = new CommonFormatter(hideMessages, colorizeTag, truncateColor);
+        this.formatter = new CommonFormatter(hideMessages, colorizeTag, truncateColor, levelColors);
 
         for (Method method : LogEvent.class.getDeclaredMethods()) {
             String methodName = method.getName();

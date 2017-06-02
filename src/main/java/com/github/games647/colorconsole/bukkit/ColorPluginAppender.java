@@ -3,6 +3,8 @@ package com.github.games647.colorconsole.bukkit;
 import com.github.games647.colorconsole.common.ColorAppender;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,17 +17,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ColorPluginAppender extends ColorAppender {
 
-    public ColorPluginAppender(Appender oldAppender, FileConfiguration config) {
+    public ColorPluginAppender(Appender oldAppender, FileConfiguration config, Map<String, String> levelColors) {
         super(oldAppender
                 , config.getStringList("hide-messages")
                 , config.getBoolean("colorPluginTag")
-                , config.getBoolean("truncateColor"));
+                , config.getBoolean("truncateColor")
+                , config.getBoolean("colorMessage") ? levelColors : Collections.emptyMap());
     }
 
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
-        Message newMessage = new SimpleMessage(formatter.colorizePluginTag(oldMessage));
+        Message newMessage = new SimpleMessage(formatter.colorizePluginTag(oldMessage, logEvent.getLevel().name()));
         return clone(logEvent, logEvent.getLoggerName(), newMessage);
     }
 

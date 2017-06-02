@@ -68,6 +68,11 @@ public class ColorConsoleConfig {
     @Setting(comment = "Removes color formatting if the complete message has color formatting")
     private boolean truncateColor;
 
+    @Setting(comment = "Should the complete logging message be colored in the same style as the logging level " +
+            "(like ColorConsole v1).\n" +
+            "If not it's using the default color (like ColorConsole v2+)")
+    private boolean colorMessage;
+
     public boolean isColorPluginTag() {
         return colorPluginTag;
     }
@@ -102,5 +107,9 @@ public class ColorConsoleConfig {
 
     public boolean isTruncateColor() {
         return truncateColor;
+    }
+
+    public boolean isColorMessage() {
+        return colorMessage;
     }
 }

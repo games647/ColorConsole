@@ -1,6 +1,7 @@
 package com.github.games647.colorconsole.common;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
 import java.util.Arrays;
@@ -25,11 +26,25 @@ public class CommonFormatter {
     private final boolean colorizeTag;
     private final boolean truncateColor;
     private Map<String, String> pluginColors;
+    private Map<String, String> levelColors;
 
-    public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag, boolean truncateColor) {
+    public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag, boolean truncateColor
+            , Map<String, String> levelColors) {
         this.ignoreMessages = ImmutableSet.copyOf(ignoreMessages);
+
         this.colorizeTag = colorizeTag;
         this.truncateColor = truncateColor;
+
+        Builder<String, String> builder = ImmutableMap.builder();
+        for (Map.Entry<String, String> entry : levelColors.entrySet()) {
+            if (entry.getKey().equals("INFO")) {
+                continue;
+            }
+
+            builder.put(entry.getKey(), format(entry.getValue()));
+        }
+
+        this.levelColors = builder.build();
     }
 
     public boolean shouldIgnore(String message) {
@@ -62,9 +77,9 @@ public class CommonFormatter {
         this.pluginColors = colorBuilder.build();
     }
 
-    public String colorizePluginTag(String message) {
+    public String colorizePluginTag(String message, String level) {
         if (!message.contains("[") || !message.contains("]")) {
-            return message;
+            return levelColors.getOrDefault(level, "") + message + reset;
         }
 
         String newMessage = message;
@@ -83,7 +98,8 @@ public class CommonFormatter {
         int endTag = newMessage.indexOf(']', startTag);
 
         String pluginName = colorizePluginName(newMessage.substring(startTag, endTag));
-        return '[' + pluginName + ']' + startingColorCode + newMessage.substring(endTag + 1);
+        return '[' + pluginName + ']' + startingColorCode
+                + levelColors.getOrDefault(level, "") + newMessage.substring(endTag + 1) + reset;
     }
 
     public String colorizePluginName(String pluginName) {
@@ -95,8 +111,8 @@ public class CommonFormatter {
         return pluginColor + pluginName + reset;
     }
 
-    public String format(String pluginFormat) {
-        String[] formatParts = pluginFormat.split(" ");
+    public String format(String keyCode) {
+        String[] formatParts = keyCode.split(" ");
         Ansi ansi = Ansi.ansi();
         for (String format : formatParts) {
             for (Code ansiCode : Code.values()) {

@@ -24,8 +24,15 @@ public class ColorConsoleBukkit extends JavaPlugin {
     public void onLoad() {
         saveDefaultConfig();
 
+        Map<String, String> levelColors = Maps.newHashMap();
+        levelColors.put("FATAL", getConfig().getString("FATAL"));
+        levelColors.put("ERROR", getConfig().getString("ERROR"));
+        levelColors.put("WARN", getConfig().getString("WARN"));
+        levelColors.put("DEBUG", getConfig().getString("DEBUG"));
+        levelColors.put("TRACE", getConfig().getString("TRACE"));
+
         //try to run it as early as possible
-        installLogFormat();
+        installLogFormat(levelColors);
     }
 
     @Override
@@ -59,7 +66,7 @@ public class ColorConsoleBukkit extends JavaPlugin {
         }
     }
 
-    private void installLogFormat() {
+    private void installLogFormat(Map<String, String> levelColors) {
         Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
 
         oldLayout = terminalAppender.getLayout();
@@ -84,7 +91,7 @@ public class ColorConsoleBukkit extends JavaPlugin {
             getLogger().log(Level.WARNING, "Cannot install log format", ex);
         }
 
-        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
+        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig(), levelColors);
         Map<String, String> colors = Maps.newHashMap();
         for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
             if (!entry.getKey().startsWith("P-")) {

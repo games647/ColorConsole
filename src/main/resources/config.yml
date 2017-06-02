@@ -26,11 +26,11 @@ colorMessage: false
 logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 
 # Log Level Colors
-FATAL: red blink
+FATAL: red
 ERROR: red
-WARN: yellow bold
+WARN: yellow
 INFO: green
-DEBUG: green bold
+DEBUG: green
 TRACE: blue
 
 # Plugin Colors

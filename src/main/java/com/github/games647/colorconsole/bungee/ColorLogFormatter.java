@@ -1,6 +1,7 @@
 package com.github.games647.colorconsole.bungee;
 
 import com.github.games647.colorconsole.common.CommonFormatter;
+import com.google.common.collect.Maps;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,7 +34,17 @@ public class ColorLogFormatter extends Formatter {
         List<String> ignoreMessages = plugin.getConfiguration().getStringList("hide-messages");
         boolean colorizeTag = plugin.getConfiguration().getBoolean("colorPluginTag");
         boolean truncateColor = plugin.getConfiguration().getBoolean("truncateColor", false);
-        this.formatter = new CommonFormatter(ignoreMessages, colorizeTag, truncateColor);
+
+        Map<String, String> levelColors = Maps.newHashMap();
+        if (plugin.getConfiguration().getBoolean("colorMessage", false)) {
+            levelColors.put("FATAL", plugin.getConfiguration().getString("FATAL"));
+            levelColors.put("ERROR", plugin.getConfiguration().getString("ERROR"));
+            levelColors.put("WARN", plugin.getConfiguration().getString("WARN"));
+            levelColors.put("DEBUG", plugin.getConfiguration().getString("DEBUG"));
+            levelColors.put("TRACE", plugin.getConfiguration().getString("TRACE"));
+        }
+
+        this.formatter = new CommonFormatter(ignoreMessages, colorizeTag, truncateColor, levelColors);
     }
 
     @Override
@@ -60,7 +71,7 @@ public class ColorLogFormatter extends Formatter {
 
         formatted.append(formatter.getReset());
 
-        formatted.append(formatter.colorizePluginTag(message));
+        formatted.append(formatter.colorizePluginTag(message, translateToLog4JName(record.getLevel())));
 
         formatted.append('\n');
         if (record.getThrown() != null) {

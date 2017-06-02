@@ -3,6 +3,7 @@ package com.github.games647.colorconsole.sponge;
 import com.github.games647.colorconsole.common.ColorAppender;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.core.Appender;
@@ -12,7 +13,8 @@ import org.spongepowered.api.Sponge;
 public class ColorPluginAppender extends ColorAppender {
 
     public ColorPluginAppender(Appender oldAppender, ColorConsoleConfig config) {
-        super(oldAppender, config.getHideMessages(), config.isColorPluginTag(), config.isTruncateColor());
+        super(oldAppender, config.getHideMessages(), config.isColorPluginTag(), config.isTruncateColor()
+                , config.isColorMessage() ? config.getLevelColors() : Collections.emptyMap());
     }
 
     @Override
