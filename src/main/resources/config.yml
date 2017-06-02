@@ -6,6 +6,10 @@ colorPluginTag: true
 # Should the log message be highlighted depending on the logging level
 colorLoggingLevel: true
 
+# Should the complete logging message be colored in the same style as the logging level (like ColorConsole v1).
+# If not it's using the default color (like ColorConsole v2+)
+colorMessage: false
+
 # How the messages should be displayed
 #
 # Variables:

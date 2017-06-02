@@ -12,7 +12,6 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
@@ -21,7 +20,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = "colorconsole", name = "ColorConsole", version = "1.9"
+@Plugin(id = "colorconsole", name = "ColorConsole", version = "2.2"
         , url = "https://github.com/games647/ColorConsole/"
         , description = "Print colorful console messages depending on the logging level")
 public class ColorConsoleSponge {
@@ -100,16 +99,9 @@ public class ColorConsoleSponge {
             logger.warn("Cannot install log format", ex);
         }
 
-        if (configMapper.getInstance().isColorPluginTag()) {
-            org.apache.logging.log4j.core.Logger rootLogger = ((org.apache.logging.log4j.core.Logger) LogManager
-                    .getRootLogger());
+        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
+        pluginAppender.initPluginColors(getConfig().getPluginColors(), getConfig().getDefaultPluginColor());
 
-            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
-            pluginAppender.initPluginColors(getConfig().getPluginColors(), getConfig().getDefaultPluginColor());
-            pluginAppender.start();
-
-            rootLogger.removeAppender(terminalAppender);
-            rootLogger.addAppender(pluginAppender);
-        }
+        CommonLogInstaller.installAppender(pluginAppender, TERMINAL_NAME);
     }
 }

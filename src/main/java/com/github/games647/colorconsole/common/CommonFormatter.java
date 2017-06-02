@@ -12,7 +12,7 @@ import java.util.Set;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 import org.fusesource.jansi.Ansi.Color;
-import org.fusesource.jansi.AnsiRenderer;
+import org.fusesource.jansi.AnsiRenderer.Code;
 
 public class CommonFormatter {
 
@@ -99,7 +99,7 @@ public class CommonFormatter {
         String[] formatParts = pluginFormat.split(" ");
         Ansi ansi = Ansi.ansi();
         for (String format : formatParts) {
-            for (AnsiRenderer.Code ansiCode : AnsiRenderer.Code.values()) {
+            for (Code ansiCode : Code.values()) {
                 if (ansiCode.name().equalsIgnoreCase(format)) {
                     if (ansiCode.isAttribute()) {
                         ansi.a(ansiCode.getAttribute());
@@ -136,7 +136,7 @@ public class CommonFormatter {
                 continue;
             }
 
-            for (Ansi.Color color : Ansi.Color.values()) {
+            for (Color color : Color.values()) {
                 if (format.equalsIgnoreCase(color.name())) {
                     ansi.fg(color);
                     break;

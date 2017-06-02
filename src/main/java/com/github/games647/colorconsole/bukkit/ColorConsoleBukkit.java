@@ -2,9 +2,11 @@ package com.github.games647.colorconsole.bukkit;
 
 import com.github.games647.colorconsole.common.CommonLogInstaller;
 import com.google.common.collect.Maps;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -82,24 +84,17 @@ public class ColorConsoleBukkit extends JavaPlugin {
             getLogger().log(Level.WARNING, "Cannot install log format", ex);
         }
 
-        if (getConfig().getBoolean("colorPluginTag")) {
-            Logger rootLogger = ((Logger) LogManager.getRootLogger());
-
-            ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
-            Map<String, String> colors = Maps.newHashMap();
-            for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
-                if (!entry.getKey().startsWith("P-")) {
-                    continue;
-                }
-
-                colors.put(entry.getKey().replace("P-", ""), (String) entry.getValue());
+        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
+        Map<String, String> colors = Maps.newHashMap();
+        for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
+            if (!entry.getKey().startsWith("P-")) {
+                continue;
             }
 
-            pluginAppender.initPluginColors(colors, getConfig().getString("PLUGIN"));
-            pluginAppender.start();
-
-            rootLogger.removeAppender(terminalAppender);
-            rootLogger.addAppender(pluginAppender);
+            colors.put(entry.getKey().replace("P-", ""), (String) entry.getValue());
         }
+
+        pluginAppender.initPluginColors(colors, getConfig().getString("PLUGIN"));
+        CommonLogInstaller.installAppender(pluginAppender, TERMINAL_NAME);
     }
 }

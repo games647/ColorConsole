@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.DefaultConfiguration;
@@ -32,6 +33,15 @@ public class CommonLogInstaller {
                     .withAlwaysWriteExceptions(true)
                     .build();
         }
+    }
+
+    public static void installAppender(Appender colorAppender, String terminalName) {
+        Logger rootLogger = (Logger) LogManager.getRootLogger();
+
+        colorAppender.start();
+
+        rootLogger.removeAppender(getTerminalAppender(terminalName));
+        rootLogger.addAppender(colorAppender);
     }
 
     public static void setLayout(Layout<? extends Serializable> layout, Appender terminalAppender)
