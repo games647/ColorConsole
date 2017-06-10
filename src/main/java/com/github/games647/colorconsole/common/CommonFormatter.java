@@ -48,6 +48,10 @@ public class CommonFormatter {
     }
 
     public boolean shouldIgnore(String message) {
+        if (message == null) {
+            return false;
+        }
+
         for (String ignore : ignoreMessages) {
             if (message.contains(ignore)) {
                 return true;
