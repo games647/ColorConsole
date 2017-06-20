@@ -70,7 +70,12 @@ public class ColorConsoleBukkit extends JavaPlugin {
         Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
 
         oldLayout = terminalAppender.getLayout();
-        String logFormat = getConfig().getString("logFormat");
+        String logFormat = oldLayout.toString();
+        if (oldLayout.toString().contains("%minecraftFormatting")) {
+            logFormat.replace("%msg", "%minecraftFormatting{%msg}");
+        }
+
+        logFormat = "[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx";
         if (getConfig().getBoolean("colorLoggingLevel")) {
             logFormat = logFormat.replace("%level",  "%highlight{%level}{"
                     + "FATAL=" + getConfig().getString("FATAL") + ", "
@@ -83,7 +88,6 @@ public class ColorConsoleBukkit extends JavaPlugin {
 
         String dateStyle = getConfig().getString("dateStyle");
         logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
-
         try {
             PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
             CommonLogInstaller.setLayout(layout, terminalAppender);
