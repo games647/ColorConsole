@@ -70,12 +70,11 @@ public class ColorConsoleBukkit extends JavaPlugin {
         Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
 
         oldLayout = terminalAppender.getLayout();
-        String logFormat = oldLayout.toString();
-        if (oldLayout.toString().contains("%minecraftFormatting")) {
-            logFormat.replace("%msg", "%minecraftFormatting{%msg}");
+        String logFormat = getConfig().getString("logFormat");
+        if (oldLayout.toString().contains("minecraftFormatting")) {
+            logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
         }
 
-        logFormat = "[%d{HH:mm:ss} %level]: %minecraftFormatting{%msg}%n%xEx";
         if (getConfig().getBoolean("colorLoggingLevel")) {
             logFormat = logFormat.replace("%level",  "%highlight{%level}{"
                     + "FATAL=" + getConfig().getString("FATAL") + ", "

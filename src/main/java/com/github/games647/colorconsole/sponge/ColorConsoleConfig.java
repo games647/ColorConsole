@@ -1,7 +1,10 @@
 package com.github.games647.colorconsole.sponge;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,7 +20,7 @@ public class ColorConsoleConfig {
         this.levelColors.put("FATAL", "red blink");
         this.levelColors.put("ERROR", "red");
         this.levelColors.put("WARN", "yellow bold");
-        this.levelColors.put("INFO", "default");
+        this.levelColors.put("INFO", "green");
         this.levelColors.put("DEBUG", "green bold");
         this.levelColors.put("TRACE", "blue");
     }
@@ -45,7 +48,7 @@ public class ColorConsoleConfig {
             + "%line - Line number\n"
             + "\n"
             + "For more details vist: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns")
-    private String logFormat = "[%d{HH:mm:ss}] [%level] [%logger]: %msg%n";
+    private String logFormat = "[%d{HH:mm:ss} %level] [%logger{1}]: %msg%n";
 
     @Setting(comment = "Log Level Colors")
     private Map<String, String> levelColors;
@@ -59,11 +62,11 @@ public class ColorConsoleConfig {
     @Setting(comment = "How should the time be highlighted\n" +
             "Like below it could also be default which means it's the default font color depending on " +
             "your terminal settings.")
-    private String dateStyle;
+    private String dateStyle = "cyan";
 
     @Setting(comment = "Hides the log message if it contains one or more of the following texts\n"
             + "The texts are case-sensitive")
-    private Set<String> hideMessages;
+    private List<String> hideMessages = Lists.newArrayList();
 
     @Setting(comment = "Removes color formatting if the complete message has color formatting")
     private boolean truncateColor;
@@ -98,7 +101,7 @@ public class ColorConsoleConfig {
     }
 
     public Set<String> getHideMessages() {
-        return hideMessages;
+        return ImmutableSet.copyOf(hideMessages);
     }
 
     public String getDateStyle() {

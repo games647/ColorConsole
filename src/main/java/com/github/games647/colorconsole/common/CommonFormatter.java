@@ -98,6 +98,10 @@ public class CommonFormatter {
             }
         }
 
+        if (!newMessage.startsWith("[")) {
+            return levelColors.getOrDefault(level, "") + message + reset;
+        }
+
         int startTag = newMessage.indexOf('[') + 1;
         int endTag = newMessage.indexOf(']', startTag);
 

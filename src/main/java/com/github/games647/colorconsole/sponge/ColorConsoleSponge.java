@@ -4,6 +4,7 @@ import com.github.games647.colorconsole.common.CommonLogInstaller;
 import com.google.inject.Inject;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Path;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -11,8 +12,8 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
-
 import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
 import org.spongepowered.api.config.DefaultConfig;
@@ -20,12 +21,14 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = "colorconsole", name = "ColorConsole", version = "2.2"
+@Plugin(id = "colorconsole", name = "ColorConsole", version = "2.3"
         , url = "https://github.com/games647/ColorConsole/"
         , description = "Print colorful console messages depending on the logging level")
 public class ColorConsoleSponge {
 
-    private static String TERMINAL_NAME = "FmlConsole";
+//    private static String TERMINAL_NAME = "FmlConsole";
+//    private static String TERMINAL_NAME = "Console";
+    private static String TERMINAL_NAME = "MinecraftConsole";
 
     private final Logger logger;
 
@@ -72,13 +75,17 @@ public class ColorConsoleSponge {
         }
 
         installLogFormat();
-        logger.warn("Test");
     }
 
     private void installLogFormat() {
         Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
-        
+
+        Layout<? extends Serializable> oldLayout = terminalAppender.getLayout();
         String logFormat = configMapper.getInstance().getLogFormat();
+        if (oldLayout.toString().contains("%minecraftFormatting")) {
+            logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
+        }
+
         if (configMapper.getInstance().isColorLoggingLevel()) {
             logFormat = logFormat.replace("%level",  "%highlight{%level}{"
                     + "FATAL=" + configMapper.getInstance().getLevelColors().get("FATAL") + ", "
@@ -90,7 +97,7 @@ public class ColorConsoleSponge {
         }
 
         String dateStyle = configMapper.getInstance().getDateStyle();
-        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
+        logFormat = logFormat.replace("%d{HH:mm:ss}", "%style{" + "%d{HH:mm:ss}" + "}{" + dateStyle + "}");
 
         try {
             PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
@@ -103,5 +110,6 @@ public class ColorConsoleSponge {
         pluginAppender.initPluginColors(getConfig().getPluginColors(), getConfig().getDefaultPluginColor());
 
         CommonLogInstaller.installAppender(pluginAppender, TERMINAL_NAME);
+        CommonLogInstaller.installAppender(pluginAppender, "Console");
     }
 }
