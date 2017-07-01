@@ -10,12 +10,11 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import net.md_5.bungee.log.ColouredWriter;
 
 public class ColorConsoleBungee extends Plugin {
 
@@ -40,16 +39,14 @@ public class ColorConsoleBungee extends Plugin {
     @Override
     public void onDisable() {
         //restore the old format
-        BungeeCord bungee = BungeeCord.getInstance();
+        ProxyServer bungee = ProxyServer.getInstance();
         Logger bungeeLogger = bungee.getLogger();
 
         Handler[] handlers = bungeeLogger.getHandlers();
         for (Handler handler : handlers) {
-            if (handler instanceof ColouredWriter) {
-                Formatter formatter = handler.getFormatter();
-                if (formatter instanceof ColorLogFormatter) {
-                    handler.setFormatter(((ColorLogFormatter) formatter).getOldFormatter());
-                }
+            Formatter formatter = handler.getFormatter();
+            if (formatter instanceof ColorLogFormatter) {
+                handler.setFormatter(((ColorLogFormatter) formatter).getOldFormatter());
             }
         }
     }
@@ -59,18 +56,16 @@ public class ColorConsoleBungee extends Plugin {
     }
 
     private void installLogFormat() {
-        BungeeCord bungee = BungeeCord.getInstance();
+        ProxyServer bungee = ProxyServer.getInstance();
         Logger bungeeLogger = bungee.getLogger();
 
         Handler[] handlers = bungeeLogger.getHandlers();
         for (Handler handler : handlers) {
-            if (handler instanceof ColouredWriter) {
-                Formatter oldFormatter = handler.getFormatter();
+            Formatter oldFormatter = handler.getFormatter();
 
-                ColorLogFormatter newFormatter = new ColorLogFormatter(this, oldFormatter);
-                newFormatter.initPluginColors(getConfiguration().getString("PLUGIN"));
-                handler.setFormatter(newFormatter);
-            }
+            ColorLogFormatter newFormatter = new ColorLogFormatter(this, oldFormatter);
+            newFormatter.initPluginColors(getConfiguration().getString("PLUGIN"));
+            handler.setFormatter(newFormatter);
         }
     }
 

@@ -100,12 +100,6 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-        <!--BungeeCord with also the part outside the API-->
-        <repository>
-            <id>bungee-repo</id>
-            <url>https://repo.extension.ws/content/repositories/snapshots/</url>
-        </repository>
-
         <!--Sponge-API-->
         <repository>
             <id>sponge-repo</id>
@@ -124,9 +118,9 @@
 
         <!--Normally should you move this to a extra module, but this project is currently so small-->
         <dependency>
-            <groupId>tc.oc</groupId>
-            <artifactId>bungeecord-proxy</artifactId>
-            <version>1.11-SNAPSHOT</version>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.12-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
