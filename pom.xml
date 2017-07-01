@@ -17,20 +17,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--Possibility to deploy directly to the plugins folder-->
-        <outputDir>${basedir}/target</outputDir>
     </properties>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/games647/ColorConsole/issues</url>
-    </issueManagement>
-
-    <scm>
-        <url>https://github.com/games647/ColorConsole</url>
-        <connection>scm:git:git://github.com/games647//ColorConsole.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:games647/ColorConsole.git</developerConnection>
-    </scm>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -47,15 +34,6 @@
                     <target>1.8</target>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <outputDirectory>${outputDir}</outputDirectory>
                 </configuration>
             </plugin>
 
@@ -90,6 +68,20 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-sources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <resources>
@@ -97,14 +89,6 @@
                 <directory>src/main/resources</directory>
                 <!--Replace variables-->
                 <filtering>true</filtering>
-            </resource>
-
-            <!--Add the license to jar in order to see it in the final jar-->
-            <resource>
-                <directory>${basedir}</directory>
-                <includes>
-                    <include>LICENSE</include>
-                </includes>
             </resource>
         </resources>
     </build>

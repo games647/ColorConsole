@@ -12,6 +12,7 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import ninja.leaping.configurate.objectmapping.ObjectMapper;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.layout.PatternLayout;
@@ -21,9 +22,8 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = "colorconsole", name = "ColorConsole", version = "2.3"
-        , url = "https://github.com/games647/ColorConsole/"
-        , description = "Print colorful console messages depending on the logging level")
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
+        , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ColorConsoleSponge {
 
 //    private static String TERMINAL_NAME = "FmlConsole";
