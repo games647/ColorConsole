@@ -16,7 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class ColorConsoleBukkit extends JavaPlugin {
 
-    private static String TERMINAL_NAME = "TerminalConsole";
+    private static final String TERMINAL_NAME = "TerminalConsole";
 
     private Layout<? extends Serializable> oldLayout;
 
@@ -82,11 +82,11 @@ public class ColorConsoleBukkit extends JavaPlugin {
                     + "WARN=" + getConfig().getString("WARN") + ", "
                     + "INFO=" + getConfig().getString("INFO") + ", "
                     + "DEBUG=" + getConfig().getString("DEBUG") + ", "
-                    + "TRACE=" + getConfig().getString("TRACE") + "}");
+                    + "TRACE=" + getConfig().getString("TRACE") + '}');
         }
 
         String dateStyle = getConfig().getString("dateStyle");
-        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + "}");
+        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + '}');
         try {
             PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
             CommonLogInstaller.setLayout(layout, terminalAppender);

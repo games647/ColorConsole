@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,47 +27,47 @@ public class ColorConsoleConfig {
     }
 
     @Setting(comment = "Should the plugin tag [PLUGIN_NAME] be highlighted")
-    private boolean colorPluginTag = true;
+    private final boolean colorPluginTag = true;
 
     @Setting(comment = "Should the log message be highlighted depending on the logging level")
-    private boolean colorLoggingLevel = true;
+    private final boolean colorLoggingLevel = true;
 
     @Setting(comment = "How the messages should be displayed\n"
-            + "\n"
+            + '\n'
             + "Variables:\n"
             + "%thread - Thread name\n"
             + "%d{HH:mm:ss} - Timestamp\n"
             + "%msg - log message\n"
             + "%logger - logger name\n"
             + "%n - new line\n"
-            + "\n"
-            + "These variables try to get the orgin. This is an expensive operation and may impact performance. "
+            + '\n'
+            + "These variables try to get the origin. This is an expensive operation and may impact performance. "
             + "Use with caution.\n"
-            + "\n"
+            + '\n'
             + "%class{precision} - Class name\n"
             + "%method - Method name\n"
             + "%line - Line number\n"
-            + "\n"
-            + "For more details vist: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns")
-    private String logFormat = "[%d{HH:mm:ss} %level] [%logger{1}]: %msg%n";
+            + '\n'
+            + "For more details visit: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns")
+    private final String logFormat = "[%d{HH:mm:ss} %level] [%logger{1}]: %msg%n";
 
     @Setting(comment = "Log Level Colors")
-    private Map<String, String> levelColors;
+    private final Map<String, String> levelColors;
 
     @Setting(comment = "Plugin Colors or random")
-    private String defaultPluginColor = "blue";
+    private final String defaultPluginColor = "blue";
 
     @Setting(comment = "Custom plugin colors")
-    private Map<String, String> pluginColors;
+    private final Map<String, String> pluginColors;
 
     @Setting(comment = "How should the time be highlighted\n" +
             "Like below it could also be default which means it's the default font color depending on " +
             "your terminal settings.")
-    private String dateStyle = "cyan";
+    private final String dateStyle = "cyan";
 
     @Setting(comment = "Hides the log message if it contains one or more of the following texts\n"
             + "The texts are case-sensitive")
-    private List<String> hideMessages = Lists.newArrayList();
+    private final List<String> hideMessages = Lists.newArrayList();
 
     @Setting(comment = "Removes color formatting if the complete message has color formatting")
     private boolean truncateColor;
@@ -100,7 +101,7 @@ public class ColorConsoleConfig {
         return pluginColors;
     }
 
-    public Set<String> getHideMessages() {
+    public Collection<String> getHideMessages() {
         return ImmutableSet.copyOf(hideMessages);
     }
 

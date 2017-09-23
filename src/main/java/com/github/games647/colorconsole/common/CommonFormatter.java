@@ -26,7 +26,7 @@ public class CommonFormatter {
     private final boolean colorizeTag;
     private final boolean truncateColor;
     private Map<String, String> pluginColors;
-    private Map<String, String> levelColors;
+    private final Map<String, String> levelColors;
 
     public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag, boolean truncateColor
             , Map<String, String> levelColors) {
@@ -37,7 +37,7 @@ public class CommonFormatter {
 
         Builder<String, String> builder = ImmutableMap.builder();
         for (Map.Entry<String, String> entry : levelColors.entrySet()) {
-            if (entry.getKey().equals("INFO")) {
+            if ("INFO".equals(entry.getKey())) {
                 continue;
             }
 
@@ -61,7 +61,7 @@ public class CommonFormatter {
         return false;
     }
 
-    public void initPluginColors(Collection<String> plugins, Map<String, String> configColors, String def) {
+    public void initPluginColors(Iterable<String> plugins, Map<String, String> configColors, String def) {
         Random random = new Random();
         Color[] colors = Color.values();
         //remove black, because it's often hard to read
@@ -70,7 +70,7 @@ public class CommonFormatter {
         ImmutableMap.Builder<String, String> colorBuilder = ImmutableMap.builder();
         for (String plugin : plugins) {
             String styleCode = configColors.getOrDefault(plugin, def);
-            if (styleCode.equalsIgnoreCase("random")) {
+            if ("random".equalsIgnoreCase(styleCode)) {
                 //ignore default
                 styleCode = colors[random.nextInt(colors.length - 1)].name();
             }

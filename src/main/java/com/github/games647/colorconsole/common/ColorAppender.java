@@ -26,8 +26,8 @@ public abstract class ColorAppender extends AbstractAppender {
 
         for (Method method : LogEvent.class.getDeclaredMethods()) {
             String methodName = method.getName();
-            if (methodName.equalsIgnoreCase("getLoggerFqcn")
-                    || methodName.equalsIgnoreCase("getFQCN")) {
+            if ("getLoggerFqcn".equalsIgnoreCase(methodName)
+                    || "getFQCN".equalsIgnoreCase(methodName)) {
                 loggerClassGetter = method;
                 method.setAccessible(true);
             }

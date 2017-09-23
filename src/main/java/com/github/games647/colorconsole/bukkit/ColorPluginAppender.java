@@ -14,6 +14,7 @@ import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public class ColorPluginAppender extends ColorAppender {
 
@@ -35,7 +36,7 @@ public class ColorPluginAppender extends ColorAppender {
     @Override
     protected Collection<String> loadPluginNames() {
         return Stream.of(Bukkit.getPluginManager().getPlugins())
-                .map(plugin -> plugin.getName())
+                .map(Plugin::getName)
                 .collect(Collectors.toSet());
     }
 }

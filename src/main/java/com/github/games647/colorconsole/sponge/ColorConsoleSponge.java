@@ -28,7 +28,7 @@ public class ColorConsoleSponge {
 
 //    private static String TERMINAL_NAME = "FmlConsole";
 //    private static String TERMINAL_NAME = "Console";
-    private static String TERMINAL_NAME = "MinecraftConsole";
+    private static final String TERMINAL_NAME = "MinecraftConsole";
 
     private final Logger logger;
 
@@ -93,11 +93,11 @@ public class ColorConsoleSponge {
                     + "WARN=" + configMapper.getInstance().getLevelColors().get("WARN") + ", "
                     + "INFO=" + configMapper.getInstance().getLevelColors().get("INFO") + ", "
                     + "DEBUG=" + configMapper.getInstance().getLevelColors().get("DEBUG") + ", "
-                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + "}");
+                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + '}');
         }
 
         String dateStyle = configMapper.getInstance().getDateStyle();
-        logFormat = logFormat.replace("%d{HH:mm:ss}", "%style{" + "%d{HH:mm:ss}" + "}{" + dateStyle + "}");
+        logFormat = logFormat.replace("%d{HH:mm:ss}", "%style{" + "%d{HH:mm:ss}" + "}{" + dateStyle + '}');
 
         try {
             PatternLayout layout = CommonLogInstaller.createLayout(logFormat);

@@ -17,12 +17,12 @@ colorMessage: false
 # %d{HH:mm:ss} - Timestamp
 # %msg - log message
 # %n - new line
-# These variables try to get the orgin. This is an expensive operation and may impact performance. Use with caution.
+# These variables try to get the origin. This is an expensive operation and may impact performance. Use with caution.
 # %class{precision} - Class name
 # %method - Method name
 # %line - Line number
 #
-# For more details vist: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns
+# For more details visit: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns
 logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 
 # Log Level Colors
