@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -22,8 +23,6 @@ public class ColorConsoleBukkit extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        saveDefaultConfig();
-
         Map<String, String> levelColors = Maps.newHashMap();
         levelColors.put("FATAL", getConfig().getString("FATAL"));
         levelColors.put("ERROR", getConfig().getString("ERROR"));
@@ -71,7 +70,8 @@ public class ColorConsoleBukkit extends JavaPlugin {
 
         oldLayout = terminalAppender.getLayout();
         String logFormat = getConfig().getString("logFormat");
-        if (oldLayout.toString().contains("minecraftFormatting")) {
+        String appenderClass = terminalAppender.getClass().getName();
+        if (oldLayout.toString().contains("minecraftFormatting") || appenderClass.contains("minecrell")) {
             logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
         }
 

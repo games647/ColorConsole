@@ -26,8 +26,6 @@ import org.spongepowered.api.plugin.Plugin;
         , url = PomData.URL, description = PomData.DESCRIPTION)
 public class ColorConsoleSponge {
 
-//    private static String TERMINAL_NAME = "FmlConsole";
-//    private static String TERMINAL_NAME = "Console";
     private static final String TERMINAL_NAME = "MinecraftConsole";
 
     private final Logger logger;
@@ -82,7 +80,8 @@ public class ColorConsoleSponge {
 
         Layout<? extends Serializable> oldLayout = terminalAppender.getLayout();
         String logFormat = configMapper.getInstance().getLogFormat();
-        if (oldLayout.toString().contains("%minecraftFormatting")) {
+        String appenderClass = terminalAppender.getClass().getName();
+        if (oldLayout.toString().contains("minecraftFormatting") || appenderClass.contains("minecrell")) {
             logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
         }
 

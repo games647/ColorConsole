@@ -12,8 +12,25 @@ import org.apache.logging.log4j.message.Message;
 
 public abstract class ColorAppender extends AbstractAppender {
 
+    private static final Method loggerClassGetter;
+    private boolean disabled = loggerClassGetter == null;
+
+    static {
+        Method classGetter = null;
+        for (Method method : LogEvent.class.getDeclaredMethods()) {
+            String methodName = method.getName();
+            if ("getLoggerFqcn".equalsIgnoreCase(methodName)
+                    || "getFQCN".equalsIgnoreCase(methodName)) {
+                classGetter = method;
+                method.setAccessible(true);
+                break;
+            }
+        }
+
+        loggerClassGetter = classGetter;
+    }
+
     private final Appender oldAppender;
-    private Method loggerClassGetter;
 
     protected final CommonFormatter formatter;
 
@@ -24,14 +41,6 @@ public abstract class ColorAppender extends AbstractAppender {
         this.oldAppender = oldAppender;
         this.formatter = new CommonFormatter(hideMessages, colorizeTag, truncateColor, levelColors);
 
-        for (Method method : LogEvent.class.getDeclaredMethods()) {
-            String methodName = method.getName();
-            if ("getLoggerFqcn".equalsIgnoreCase(methodName)
-                    || "getFQCN".equalsIgnoreCase(methodName)) {
-                loggerClassGetter = method;
-                method.setAccessible(true);
-            }
-        }
     }
 
     public void initPluginColors(Map<String, String> configColors, String def) {
@@ -56,12 +65,12 @@ public abstract class ColorAppender extends AbstractAppender {
 
     protected LogEvent clone(LogEvent oldEvent, String loggerName, Message message) {
         String className = null;
-        if (loggerClassGetter != null) {
+        if (!disabled) {
             try {
                 className = (String) loggerClassGetter.invoke(oldEvent);
             } catch (ReflectiveOperationException refEx) {
                 //if this method cannot be found then the other methods wouldn't work neither
-                loggerClassGetter = null;
+                disabled = true;
             }
         }
 
