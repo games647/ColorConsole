@@ -1,10 +1,12 @@
 package com.github.games647.colorconsole.bukkit;
 
 import com.github.games647.colorconsole.common.ColorAppender;
+import com.google.common.collect.Sets;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,6 +20,9 @@ import org.bukkit.plugin.Plugin;
 
 public class ColorPluginAppender extends ColorAppender {
 
+    private static final Set<String> disabledPrefix = Sets.newHashSet("net.minecraft", "Minecraft"
+            , "com.mojang", "com.sk89q", "ru.tehkode", "Minecraft.AWE");
+
     public ColorPluginAppender(Appender oldAppender, FileConfiguration config, Map<String, String> levelColors) {
         super(oldAppender
                 , config.getStringList("hide-messages")
@@ -29,6 +34,12 @@ public class ColorPluginAppender extends ColorAppender {
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
+        String prefix = "[" + logEvent.getLoggerName() + "] ";
+        if (!oldMessage.contains(prefix)
+                && !disabledPrefix.stream().anyMatch(disabled -> logEvent.getLoggerName().startsWith(disabled))) {
+            oldMessage = prefix + oldMessage;
+        }
+
         Message newMessage = new SimpleMessage(formatter.colorizePluginTag(oldMessage, logEvent.getLevel().name()));
         return clone(logEvent, logEvent.getLoggerName(), newMessage);
     }

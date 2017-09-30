@@ -14,4 +14,11 @@ This lightweight plugin to make your console more colorful. It colorize the mess
 * Custom logFormat
 * Colorize plugin tags (customizable)
 * Easy to use config
+* Removes color from plugins if you want to
 * Supports all versions above 1.8+
+
+## Supports
+
+* BungeeCord/Waterfall
+* SpongeForge
+* Spigot/Paper
