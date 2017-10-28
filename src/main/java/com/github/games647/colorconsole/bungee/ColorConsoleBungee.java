@@ -70,15 +70,17 @@ public class ColorConsoleBungee extends Plugin {
     }
 
     private void saveDefaultConfig() {
-        getDataFolder().mkdir();
+        try {
+            Files.createDirectories(getDataFolder().toPath());
 
-        Path configFile = getDataFolder().toPath().resolve("config.yml");
-        if (Files.notExists(configFile)) {
-            try (InputStream in = getResourceAsStream("config.yml")) {
-                Files.copy(in, configFile);
-            } catch (IOException ioExc) {
-                getLogger().log(Level.SEVERE, "Error saving default config", ioExc);
+            Path configFile = getDataFolder().toPath().resolve("config.yml");
+            if (Files.notExists(configFile)) {
+                try (InputStream in = getResourceAsStream("config.yml")) {
+                    Files.copy(in, configFile);
+                }
             }
+        } catch (IOException ioExc) {
+            getLogger().log(Level.SEVERE, "Error saving default config", ioExc);
         }
     }
 }

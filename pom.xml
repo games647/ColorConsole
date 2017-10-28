@@ -9,7 +9,7 @@
 
     <name>ColorConsole</name>
     <version>2.3.3</version>
-    <inceptionYear>2016</inceptionYear>
+
     <url>https://dev.bukkit.org/bukkit-plugins/colorconsole/</url>
     <description>
         Print colorful console messages depending on the logging level

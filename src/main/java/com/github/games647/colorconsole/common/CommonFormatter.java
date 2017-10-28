@@ -19,7 +19,7 @@ public class CommonFormatter {
 
     //copied from AnsiEscape in order to provide compatibility with older minecraft versions
     private static final String CSI = "\u001b[";
-    private static final String SUFFIX = "m";
+    private static final char SUFFIX = 'm';
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
 
     private final Set<String> ignoreMessages;

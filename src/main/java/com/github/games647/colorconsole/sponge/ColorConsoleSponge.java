@@ -32,10 +32,6 @@ public class ColorConsoleSponge {
 
     @Inject
     @DefaultConfig(sharedRoot = true)
-    private Path configFile;
-
-    @Inject
-    @DefaultConfig(sharedRoot = true)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
     private ObjectMapper<ColorConsoleConfig>.BoundInstance configMapper;
@@ -55,18 +51,15 @@ public class ColorConsoleSponge {
         logger.info("Setting up config");
 
         rootNode = configManager.createEmptyNode();
-        ConfigurationLoader<CommentedConfigurationNode> configLoader = HoconConfigurationLoader.builder()
-                .setPath(configFile).build();
         try {
-            configMapper = ObjectMapper
-                    .forClass(ColorConsoleConfig.class).bindToNew();
+            configMapper = ObjectMapper.forClass(ColorConsoleConfig.class).bindToNew();
 
             rootNode = configManager.load();
             configMapper.populate(rootNode);
 
             //add and save missing values
             configMapper.serialize(rootNode);
-            configLoader.save(rootNode);
+            configManager.save(rootNode);
         } catch (IOException | ObjectMappingException ioEx) {
             logger.error("Cannot save default config", ioEx);
             return;
