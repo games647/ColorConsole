@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableSet;
 
+import io.netty.util.internal.ThreadLocalRandom;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -62,7 +64,6 @@ public class CommonFormatter {
     }
 
     public void initPluginColors(Iterable<String> plugins, Map<String, String> configColors, String def) {
-        Random random = new Random();
         Color[] colors = Color.values();
         //remove black, because it's often hard to read
         colors = Arrays.copyOfRange(colors, 1, colors.length);
@@ -72,7 +73,7 @@ public class CommonFormatter {
             String styleCode = configColors.getOrDefault(plugin, def);
             if ("random".equalsIgnoreCase(styleCode)) {
                 //ignore default
-                styleCode = colors[random.nextInt(colors.length - 1)].name();
+                styleCode = colors[ThreadLocalRandom.current().nextInt(colors.length - 1)].name();
             }
 
             colorBuilder.put(plugin, format(styleCode));
