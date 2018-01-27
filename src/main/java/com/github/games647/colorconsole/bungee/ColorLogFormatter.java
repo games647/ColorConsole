@@ -1,7 +1,6 @@
 package com.github.games647.colorconsole.bungee;
 
 import com.github.games647.colorconsole.common.CommonFormatter;
-import com.google.common.collect.Maps;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,7 +34,7 @@ public class ColorLogFormatter extends Formatter {
         boolean colorizeTag = plugin.getConfiguration().getBoolean("colorPluginTag");
         boolean truncateColor = plugin.getConfiguration().getBoolean("truncateColor", false);
 
-        Map<String, String> levelColors = Maps.newHashMap();
+        Map<String, String> levelColors = new HashMap<>();
         if (plugin.getConfiguration().getBoolean("colorMessage", false)) {
             levelColors.put("FATAL", plugin.getConfiguration().getString("FATAL"));
             levelColors.put("ERROR", plugin.getConfiguration().getString("ERROR"));

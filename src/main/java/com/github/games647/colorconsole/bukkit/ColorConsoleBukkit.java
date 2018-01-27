@@ -1,13 +1,12 @@
 package com.github.games647.colorconsole.bukkit;
 
 import com.github.games647.colorconsole.common.CommonLogInstaller;
-import com.google.common.collect.Maps;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
@@ -23,7 +22,7 @@ public class ColorConsoleBukkit extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        Map<String, String> levelColors = Maps.newHashMap();
+        Map<String, String> levelColors = new HashMap<>();
         levelColors.put("FATAL", getConfig().getString("FATAL"));
         levelColors.put("ERROR", getConfig().getString("ERROR"));
         levelColors.put("WARN", getConfig().getString("WARN"));
@@ -95,7 +94,7 @@ public class ColorConsoleBukkit extends JavaPlugin {
         }
 
         ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig(), levelColors);
-        Map<String, String> colors = Maps.newHashMap();
+        Map<String, String> colors = new HashMap<>();
         for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
             if (!entry.getKey().startsWith("P-")) {
                 continue;

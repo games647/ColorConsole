@@ -1,23 +1,22 @@
 package com.github.games647.colorconsole.sponge;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import ninja.leaping.configurate.objectmapping.Setting;
 
 public class ColorConsoleConfig {
 
     public ColorConsoleConfig() {
-        this.pluginColors = Maps.newHashMap();
+        this.pluginColors = new HashMap<>();
         this.pluginColors.put("ColorConsole", "yellow");
 
-        this.levelColors = Maps.newHashMap();
+        this.levelColors = new HashMap<>();
         this.levelColors.put("FATAL", "red blink");
         this.levelColors.put("ERROR", "red");
         this.levelColors.put("WARN", "yellow bold");
@@ -67,7 +66,7 @@ public class ColorConsoleConfig {
 
     @Setting(comment = "Hides the log message if it contains one or more of the following texts\n"
             + "The texts are case-sensitive")
-    private final List<String> hideMessages = Lists.newArrayList();
+    private final List<String> hideMessages = new ArrayList<>();
 
     @Setting(comment = "Removes color formatting if the complete message has color formatting")
     private boolean truncateColor;

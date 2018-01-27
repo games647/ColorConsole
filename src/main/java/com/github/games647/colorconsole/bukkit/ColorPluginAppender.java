@@ -15,7 +15,7 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 public class ColorPluginAppender extends ColorAppender {
@@ -23,7 +23,7 @@ public class ColorPluginAppender extends ColorAppender {
     private static final Set<String> disabledPrefix = Sets.newHashSet("net.minecraft", "Minecraft"
             , "com.mojang", "com.sk89q", "ru.tehkode", "Minecraft.AWE");
 
-    public ColorPluginAppender(Appender oldAppender, FileConfiguration config, Map<String, String> levelColors) {
+    public ColorPluginAppender(Appender oldAppender, ConfigurationSection config, Map<String, String> levelColors) {
         super(oldAppender
                 , config.getStringList("hide-messages")
                 , config.getBoolean("colorPluginTag")
@@ -34,9 +34,9 @@ public class ColorPluginAppender extends ColorAppender {
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
-        String prefix = "[" + logEvent.getLoggerName() + "] ";
+        String prefix = '[' + logEvent.getLoggerName() + "] ";
         if (!oldMessage.contains(prefix)
-                && !disabledPrefix.stream().anyMatch(disabled -> logEvent.getLoggerName().startsWith(disabled))) {
+                && disabledPrefix.stream().noneMatch(disabled -> logEvent.getLoggerName().startsWith(disabled))) {
             oldMessage = prefix + oldMessage;
         }
 

@@ -64,16 +64,19 @@ public class ColorConsoleBungee extends Plugin {
             Formatter oldFormatter = handler.getFormatter();
 
             ColorLogFormatter newFormatter = new ColorLogFormatter(this, oldFormatter);
-            newFormatter.initPluginColors(getConfiguration().getString("PLUGIN"));
+            newFormatter.initPluginColors(configuration.getString("PLUGIN"));
             handler.setFormatter(newFormatter);
         }
     }
 
     private void saveDefaultConfig() {
         try {
-            Files.createDirectories(getDataFolder().toPath());
+            Path dataFolder = getDataFolder().toPath();
+            if (Files.notExists(dataFolder)) {
+                Files.createDirectories(dataFolder);
+            }
 
-            Path configFile = getDataFolder().toPath().resolve("config.yml");
+            Path configFile = dataFolder.resolve("config.yml");
             if (Files.notExists(configFile)) {
                 try (InputStream in = getResourceAsStream("config.yml")) {
                     Files.copy(in, configFile);
