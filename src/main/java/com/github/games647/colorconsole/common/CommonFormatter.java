@@ -18,7 +18,7 @@ import org.fusesource.jansi.AnsiRenderer.Code;
 
 public class CommonFormatter {
 
-    //copied from AnsiEscape in order to provide compatibility with older minecraft versions
+    //copied from AnsiEscape in order to provide compatibility with older Minecraft versions
     private static final String CSI = "\u001b[";
     private static final char SUFFIX = 'm';
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();

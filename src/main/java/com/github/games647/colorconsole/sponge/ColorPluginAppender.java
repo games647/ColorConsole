@@ -11,6 +11,8 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import static java.util.stream.Collectors.toSet;
+
 public class ColorPluginAppender extends ColorAppender {
 
     public ColorPluginAppender(Appender oldAppender, ColorConsoleConfig config) {
@@ -28,6 +30,6 @@ public class ColorPluginAppender extends ColorAppender {
     protected Collection<String> loadPluginNames() {
         return Sponge.getPluginManager().getPlugins().stream()
                 .map(PluginContainer::getId)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }

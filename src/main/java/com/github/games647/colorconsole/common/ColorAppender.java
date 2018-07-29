@@ -30,8 +30,7 @@ public abstract class ColorAppender extends AbstractAppender {
         loggerClassGetter = classGetter;
     }
 
-    private final Appender oldAppender;
-
+    protected final Appender oldAppender;
     protected final CommonFormatter formatter;
 
     protected ColorAppender(Appender oldAppender, Collection<String> hideMessages

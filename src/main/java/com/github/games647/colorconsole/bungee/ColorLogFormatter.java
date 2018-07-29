@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ProxyServer;
 
+import static java.util.stream.Collectors.toSet;
+
 public class ColorLogFormatter extends Formatter {
 
     private final ColorConsoleBungee plugin;
@@ -103,7 +105,7 @@ public class ColorLogFormatter extends Formatter {
     private Set<String> loadPluginNames() {
         return ProxyServer.getInstance().getPluginManager().getPlugins().stream()
                 .map(plugin -> plugin.getDescription().getName())
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 
     public void initPluginColors(String def) {

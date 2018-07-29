@@ -18,10 +18,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
+import static java.util.stream.Collectors.toSet;
+
 public class ColorPluginAppender extends ColorAppender {
 
     private static final Set<String> disabledPrefix = Sets.newHashSet("net.minecraft", "Minecraft"
             , "com.mojang", "com.sk89q", "ru.tehkode", "Minecraft.AWE");
+
+    private final boolean isVanillaAppender;
 
     public ColorPluginAppender(Appender oldAppender, ConfigurationSection config, Map<String, String> levelColors) {
         super(oldAppender
@@ -29,13 +33,17 @@ public class ColorPluginAppender extends ColorAppender {
                 , config.getBoolean("colorPluginTag")
                 , config.getBoolean("truncateColor")
                 , config.getBoolean("colorMessage") ? levelColors : Collections.emptyMap());
+
+        this.isVanillaAppender = "QueueLogAppender".equals(oldAppender.getClass().getSimpleName());
     }
 
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
         String prefix = '[' + logEvent.getLoggerName() + "] ";
-        if (!oldMessage.contains(prefix)
+
+        //PaperSpigot append prefix
+        if (!isVanillaAppender
                 && disabledPrefix.stream().noneMatch(disabled -> logEvent.getLoggerName().startsWith(disabled))) {
             oldMessage = prefix + oldMessage;
         }
@@ -48,6 +56,6 @@ public class ColorPluginAppender extends ColorAppender {
     protected Collection<String> loadPluginNames() {
         return Stream.of(Bukkit.getPluginManager().getPlugins())
                 .map(Plugin::getName)
-                .collect(Collectors.toSet());
+                .collect(toSet());
     }
 }

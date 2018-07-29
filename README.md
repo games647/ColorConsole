@@ -17,7 +17,7 @@ overview about what's happening on your server.
 * Colorize plugin tags (customizable)
 * Easy to use config
 * Removes color from plugins if you want to
-* Supports all versions above 1.8+
+* Supports all versions above 1.8.8+
 
 ## Supports
 

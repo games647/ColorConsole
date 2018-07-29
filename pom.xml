@@ -31,15 +31,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
                     <minimizeJar>true</minimizeJar>
-                    <artifactSet>
-                        <includes>
-                            <include>org.fusesource.jansi:jansi</include>
-                        </includes>
-                    </artifactSet>
                     <filters>
                         <filter>
                             <artifact>org.fusesource.jansi:jansi</artifact>
@@ -124,14 +119,14 @@
         <dependency>
             <groupId>org.spongepowered</groupId>
             <artifactId>spongeapi</artifactId>
-            <version>6.0.0</version>
+            <version>7.0.0</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>1.16</version>
+            <version>1.17</version>
         </dependency>
 
         <dependency>
