@@ -39,7 +39,8 @@ public class Log4JInstallerTest {
         levelColors.put(LoggingLevel.TRACE, "blue");
 
         String configFormat = "[%d{HH:mm:ss} %level]: %msg%n";
-        String expected = "[%d{HH:mm:ss} %highlight{%level}{WARN=yellow, ERROR=red, DEBUG=green, FATAL=red, TRACE=blue, INFO=green}]: %msg%n";
+        String expected = "[%d{HH:mm:ss} %highlight{%level}{FATAL=red, ERROR=red, WARN=yellow, " +
+                "INFO=green, DEBUG=green, TRACE=blue}]: %msg%n";
         assertThat(installer.mapLoggingLevels(configFormat, levelColors), is(expected));
     }
 

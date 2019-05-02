@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -123,7 +124,10 @@ public class Log4JInstaller {
 
     @VisibleForTesting
     protected String mapLoggingLevels(String logFormat, Map<LoggingLevel, String> levelColors) {
-        String levelFormat = Joiner.on(", ").withKeyValueSeparator('=').join(levelColors);
+        Map<LoggingLevel, String> sortedColors = new TreeMap<>();
+        sortedColors.putAll(levelColors);
+
+        String levelFormat = Joiner.on(", ").withKeyValueSeparator('=').join(sortedColors);
         return logFormat.replace("%level", "%highlight{%level}{" + levelFormat + '}');
     }
 }
