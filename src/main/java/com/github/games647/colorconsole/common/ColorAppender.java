@@ -33,13 +33,11 @@ public abstract class ColorAppender extends AbstractAppender {
     protected final Appender oldAppender;
     protected final CommonFormatter formatter;
 
-    protected ColorAppender(Appender oldAppender, Collection<String> hideMessages
-            , boolean colorizeTag, boolean truncateColor, Map<String, String> levelColors) {
+    protected ColorAppender(Appender oldAppender, Collection<String> hideMessages, boolean truncateColor) {
         super(oldAppender.getName(), null, oldAppender.getLayout());
 
         this.oldAppender = oldAppender;
-        this.formatter = new CommonFormatter(hideMessages, colorizeTag, truncateColor, levelColors);
-
+        this.formatter = new CommonFormatter(hideMessages, truncateColor);
     }
 
     public void initPluginColors(Map<String, String> configColors, String def) {
@@ -58,7 +56,10 @@ public abstract class ColorAppender extends AbstractAppender {
         }
     }
 
-    protected abstract LogEvent onAppend(LogEvent logEvent);
+    public LogEvent onAppend(LogEvent logEvent) {
+        String newLoggerName = formatter.colorizePluginName(logEvent.getLoggerName());
+        return clone(logEvent, newLoggerName, logEvent.getMessage());
+    }
 
     protected abstract Collection<String> loadPluginNames();
 

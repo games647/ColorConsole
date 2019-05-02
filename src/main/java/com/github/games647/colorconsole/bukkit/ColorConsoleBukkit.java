@@ -1,109 +1,101 @@
 package com.github.games647.colorconsole.bukkit;
 
-import com.github.games647.colorconsole.common.CommonLogInstaller;
+import com.github.games647.colorconsole.common.ColorAppender;
+import com.github.games647.colorconsole.common.ConsoleConfig;
+import com.github.games647.colorconsole.common.Log4JInstaller;
+import com.github.games647.colorconsole.common.LoggingLevel;
+import com.github.games647.colorconsole.common.PlatformPlugin;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Path;
+import java.util.Collection;
 import java.util.logging.Level;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.Logger;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class ColorConsoleBukkit extends JavaPlugin {
+public class ColorConsoleBukkit extends JavaPlugin implements PlatformPlugin {
 
     private static final String TERMINAL_NAME = "TerminalConsole";
+
+    private final Log4JInstaller installer = new Log4JInstaller();
 
     private Layout<? extends Serializable> oldLayout;
 
     @Override
     public void onLoad() {
-        Map<String, String> levelColors = new HashMap<>();
-        levelColors.put("FATAL", getConfig().getString("FATAL"));
-        levelColors.put("ERROR", getConfig().getString("ERROR"));
-        levelColors.put("WARN", getConfig().getString("WARN"));
-        levelColors.put("DEBUG", getConfig().getString("DEBUG"));
-        levelColors.put("TRACE", getConfig().getString("TRACE"));
-
         //try to run it as early as possible
-        installLogFormat(levelColors);
-    }
-
-    @Override
-    public void onEnable() {
         saveDefaultConfig();
+        ConsoleConfig configuration = loadConfiguration();
+
+        installLogFormat(configuration);
     }
 
     @Override
     public void onDisable() {
-        //restore the old format
-        Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
-        Logger rootLogger = ((Logger) LogManager.getRootLogger());
+        revertLogFormat();
+    }
 
-        ColorPluginAppender colorPluginAppender = null;
-        for (Appender value : rootLogger.getAppenders().values()) {
-            if (value instanceof ColorPluginAppender) {
-                colorPluginAppender = (ColorPluginAppender) value;
-                break;
-            }
-        }
-
-        if (colorPluginAppender != null) {
-            rootLogger.removeAppender(terminalAppender);
-            rootLogger.addAppender(colorPluginAppender.getOldAppender());
-        }
-
+    @Override
+    public void installLogFormat(ConsoleConfig configuration) {
         try {
-            CommonLogInstaller.setLayout(oldLayout, terminalAppender);
+            oldLayout = installer.installLog4JFormat(this, TERMINAL_NAME, configuration);
+        } catch (ReflectiveOperationException reflectiveEx) {
+            getLogger().log(Level.WARNING, "Failed to install log format", reflectiveEx);
+        }
+    }
+
+    @Override
+    public ColorAppender createAppender(Appender oldAppender, Collection<String> hideMessages, boolean truncateCol) {
+        return new ColorPluginAppender(oldAppender, hideMessages, truncateCol);
+    }
+
+    @Override
+    public void revertLogFormat() {
+        try {
+            installer.revertLog4JFormat(TERMINAL_NAME, oldLayout);
         } catch (ReflectiveOperationException ex) {
             getLogger().log(Level.WARNING, "Cannot revert log format", ex);
         }
     }
 
-    private void installLogFormat(Map<String, String> levelColors) {
-        Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
+    @Override
+    public Path getPluginFolder() {
+        return getDataFolder().toPath();
+    }
 
-        oldLayout = terminalAppender.getLayout();
-        String logFormat = getConfig().getString("logFormat");
-        String appenderClass = terminalAppender.getClass().getName();
-        if (oldLayout.toString().contains("minecraftFormatting") || appenderClass.contains("minecrell")) {
-            logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
-        }
+    @Override
+    public ConsoleConfig loadConfiguration() {
+        FileConfiguration bukkitConfig = getConfig();
 
-        if (getConfig().getBoolean("colorLoggingLevel")) {
-            logFormat = logFormat.replace("%level",  "%highlight{%level}{"
-                    + "FATAL=" + getConfig().getString("FATAL") + ", "
-                    + "ERROR=" + getConfig().getString("ERROR") + ", "
-                    + "WARN=" + getConfig().getString("WARN") + ", "
-                    + "INFO=" + getConfig().getString("INFO") + ", "
-                    + "DEBUG=" + getConfig().getString("DEBUG") + ", "
-                    + "TRACE=" + getConfig().getString("TRACE") + '}');
-        }
+        ConsoleConfig consoleConfig = new ConsoleConfig();
+        consoleConfig.setLogFormat(bukkitConfig.getString("logFormat"));
+        consoleConfig.setDateStyle(bukkitConfig.getString("dateStyle"));
 
-        String dateStyle = getConfig().getString("dateStyle");
-        logFormat = logFormat.replaceFirst("(%d)\\{.{1,}\\}", "%style{$0}{" + dateStyle + '}');
-        try {
-            PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
-            CommonLogInstaller.setLayout(layout, terminalAppender);
-        } catch (ReflectiveOperationException ex) {
-            getLogger().log(Level.WARNING, "Cannot install log format", ex);
-        }
-
-        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig(), levelColors);
-        Map<String, String> colors = new HashMap<>();
-        for (Map.Entry<String, Object> entry : getConfig().getValues(false).entrySet()) {
-            if (!entry.getKey().startsWith("P-")) {
-                continue;
+        consoleConfig.getLevelColors().clear();
+        if (bukkitConfig.getBoolean("colorLoggingLevel")) {
+            ConfigurationSection levelSection = bukkitConfig.getConfigurationSection("Level");
+            for (LoggingLevel level : LoggingLevel.values()) {
+                consoleConfig.getLevelColors().put(level, levelSection.getString(level.name(), ""));
             }
-
-            colors.put(entry.getKey().replace("P-", ""), (String) entry.getValue());
         }
 
-        pluginAppender.initPluginColors(colors, getConfig().getString("PLUGIN"));
-        CommonLogInstaller.installAppender(pluginAppender, TERMINAL_NAME);
+        consoleConfig.getPluginColors().clear();
+        if (bukkitConfig.getBoolean("colorPluginTag")) {
+            ConfigurationSection pluginSection = bukkitConfig.getConfigurationSection("Plugin");
+            consoleConfig.setDefaultPluginColor(pluginSection.getString(ConsoleConfig.DEFAULT_PLUGIN_KEY));
+            for (String pluginKey : pluginSection.getKeys(false)) {
+                consoleConfig.getPluginColors().put(pluginKey, pluginSection.getString(pluginKey));
+            }
+        }
+
+        consoleConfig.getHideMessages().clear();
+        consoleConfig.getHideMessages().addAll(bukkitConfig.getStringList("hide-messages"));
+
+        consoleConfig.setTruncateColor(bukkitConfig.getBoolean("truncateColor"));
+        return consoleConfig;
     }
 }

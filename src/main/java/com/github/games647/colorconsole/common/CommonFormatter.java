@@ -24,35 +24,15 @@ public class CommonFormatter {
     private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
 
     private final Set<String> ignoreMessages;
-    private final boolean colorizeTag;
     private final boolean truncateColor;
     private Map<String, String> pluginColors;
-    private final Map<String, String> levelColors;
 
-    public CommonFormatter(Collection<String> ignoreMessages, boolean colorizeTag, boolean truncateColor
-            , Map<String, String> levelColors) {
+    public CommonFormatter(Collection<String> ignoreMessages, boolean truncateColor) {
         this.ignoreMessages = ImmutableSet.copyOf(ignoreMessages);
-
-        this.colorizeTag = colorizeTag;
         this.truncateColor = truncateColor;
-
-        Builder<String, String> builder = ImmutableMap.builder();
-        for (Map.Entry<String, String> entry : levelColors.entrySet()) {
-            if ("INFO".equals(entry.getKey())) {
-                continue;
-            }
-
-            builder.put(entry.getKey(), format(entry.getValue()));
-        }
-
-        this.levelColors = builder.build();
     }
 
     public boolean shouldIgnore(String message) {
-        if (message == null) {
-            return false;
-        }
-
         for (String ignore : ignoreMessages) {
             if (message.contains(ignore)) {
                 return true;
@@ -64,10 +44,10 @@ public class CommonFormatter {
 
     public void initPluginColors(Iterable<String> plugins, Map<String, String> configColors, String def) {
         Color[] colors = Color.values();
-        //remove black, because it's often hard to read
+        // remove black, because it's often hard to read
         colors = Arrays.copyOfRange(colors, 1, colors.length);
 
-        ImmutableMap.Builder<String, String> colorBuilder = ImmutableMap.builder();
+        Builder<String, String> colorBuilder = ImmutableMap.builder();
         for (String plugin : plugins) {
             String styleCode = configColors.getOrDefault(plugin, def);
             if ("random".equalsIgnoreCase(styleCode)) {
@@ -81,45 +61,32 @@ public class CommonFormatter {
         this.pluginColors = colorBuilder.build();
     }
 
-    public String colorizePluginTag(String message, String level) {
-        if (!message.contains("[") || !message.contains("]")) {
-            return levelColors.getOrDefault(level, "") + message + reset;
-        }
-
+    public String colorizePluginTag(String message) {
         String newMessage = message;
 
         String startingColorCode = "";
         if (message.startsWith(CSI)) {
             int endColor = message.indexOf(SUFFIX);
 
-            newMessage = message.substring(endColor + 1, message.length());
+            newMessage = message.substring(endColor + 1);
             if (!truncateColor) {
                 startingColorCode = message.substring(0, endColor + 1);
             }
-        }
-
-        if (!newMessage.startsWith("[")) {
-            return levelColors.getOrDefault(level, "") + message + reset;
         }
 
         int startTag = newMessage.indexOf('[') + 1;
         int endTag = newMessage.indexOf(']', startTag);
 
         String pluginName = colorizePluginName(newMessage.substring(startTag, endTag));
-        return '[' + pluginName + ']' + startingColorCode
-                + levelColors.getOrDefault(level, "") + newMessage.substring(endTag + 1) + reset;
+        return '[' + pluginName + ']' + startingColorCode + newMessage.substring(endTag + 1) + reset;
     }
 
     public String colorizePluginName(String pluginName) {
-        if (!colorizeTag) {
-            return pluginName;
-        }
-
         String pluginColor = pluginColors.getOrDefault(pluginName, "");
         return pluginColor + pluginName + reset;
     }
 
-    public String format(String keyCode) {
+    private String format(String keyCode) {
         String[] formatParts = keyCode.split(" ");
         Ansi ansi = Ansi.ansi();
         for (String format : formatParts) {
@@ -157,14 +124,6 @@ public class CommonFormatter {
 
             if ("reverse".equalsIgnoreCase(format)) {
                 ansi.a(Attribute.NEGATIVE_ON);
-                continue;
-            }
-
-            for (Color color : Color.values()) {
-                if (format.equalsIgnoreCase(color.name())) {
-                    ansi.fg(color);
-                    break;
-                }
             }
         }
 

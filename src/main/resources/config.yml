@@ -1,15 +1,5 @@
 # ConsoleColor config
 
-# Should the plugin tag [PLUGIN_NAME] be highlighted
-colorPluginTag: true
-
-# Should the log message be highlighted depending on the logging level
-colorLoggingLevel: true
-
-# Should the complete logging message be colored in the same style as the logging level (like ColorConsole v1).
-# If not it's using the default color (like ColorConsole v2+)
-colorMessage: false
-
 # How the messages should be displayed
 #
 # Variables:
@@ -25,35 +15,44 @@ colorMessage: false
 # For more details visit: https://logging.apache.org/log4j/2.x/manual/layouts.html#Patterns
 logFormat: '[%d{HH:mm:ss} %level]: %msg%n'
 
+# How should the time be highlighted
+# Like below it could also be default which means it's the default font color depending on your terminal settings.
+dateStyle: cyan
+
+# Should the log message be highlighted depending on the logging level
+colorLoggingLevel: true
+
 # Log Level Colors
-FATAL: red
-ERROR: red
-WARN: yellow
-INFO: green
-DEBUG: green
-TRACE: blue
+Level:
+  FATAL: red
+  ERROR: red
+  WARN: yellow
+  INFO: green
+  DEBUG: green
+  TRACE: blue
+
+# Should the plugin tag [PLUGIN_NAME] be highlighted
+colorPluginTag: true
 
 # Plugin Colors
 
 # This can be the default color or "random" it gives each plugin (besides the ones specified below) a different color
 # which keeps the same until the server shuts down.
 # Black is ignored by default, because it's often hard to read on the console
-PLUGIN: blue
-# Plugin: random
 
-P-Essentials: green
-P-LagMonitor: red
-P-WorldEdit: red
-P-FastLogin: cyan
-P-WorldGuard: cyan
-P-Vault: magenta
-P-ChangeSkin: yellow
-P-ScoreboardStats: white
-P-mcMMOAction: blue
-
-# How should the time be highlighted
-# Like below it could also be default which means it's the default font color depending on your terminal settings.
-dateStyle: cyan
+Plugin:
+  Default: random
+  Essentials: green
+  LagMonitor: red
+  WorldEdit: red
+  FastLogin: cyan
+  WorldGuard: cyan
+  Vault: magenta
+  ChangeSkin: yellow
+  ScoreboardStats: white
+  mcMMOAction: blue
+  mcMMOExtras: yellow
+  ColorConsole: orange
 
 # Available foreground colors   | Available background colors
 # Black                         |   BG_Black

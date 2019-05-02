@@ -15,7 +15,6 @@ overview about what's happening on your server.
 * Ignores specified log messages
 * Custom logFormat
 * Colorize plugin tags (customizable)
-* Easy to use config
 * Removes color from plugins if you want to
 * Supports all versions above 1.8.8+
 

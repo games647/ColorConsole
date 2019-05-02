@@ -1,105 +1,129 @@
 package com.github.games647.colorconsole.sponge;
 
-import com.github.games647.colorconsole.common.CommonLogInstaller;
+import com.github.games647.colorconsole.common.ColorAppender;
+import com.github.games647.colorconsole.common.ConsoleConfig;
+import com.github.games647.colorconsole.common.Log4JInstaller;
+import com.github.games647.colorconsole.common.LoggingLevel;
+import com.github.games647.colorconsole.common.PlatformPlugin;
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
 
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMapper;
+import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import ninja.leaping.configurate.yaml.YAMLConfigurationLoader;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.slf4j.Logger;
-import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.config.ConfigDir;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Plugin;
 
-@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION
-        , url = PomData.URL, description = PomData.DESCRIPTION)
-public class ColorConsoleSponge {
+@Plugin(id = PomData.ARTIFACT_ID, name = PomData.NAME, version = PomData.VERSION,
+        url = PomData.URL, description = PomData.DESCRIPTION)
+public class ColorConsoleSponge implements PlatformPlugin {
 
+    //Console is maybe required too?
     private static final String TERMINAL_NAME = "MinecraftConsole";
 
+    private final Path pluginFolder;
     private final Logger logger;
 
-    @Inject
-    @DefaultConfig(sharedRoot = true)
-    private ConfigurationLoader<CommentedConfigurationNode> configManager;
-
-    private ObjectMapper<ColorConsoleConfig>.BoundInstance configMapper;
-    private CommentedConfigurationNode rootNode;
+    private final Log4JInstaller installer = new Log4JInstaller();
+    private Layout<? extends Serializable> oldLayout;
 
     @Inject
-    public ColorConsoleSponge(Logger logger) {
+    public ColorConsoleSponge(Logger logger, @ConfigDir(sharedRoot = false) Path dataFolder) {
+        this.pluginFolder = dataFolder;
         this.logger = logger;
     }
 
-    public ColorConsoleConfig getConfig() {
-        return configMapper.getInstance();
-    }
-
-    @Listener //During this state, the plugin gets ready for initialization. Logger and config
+    @Listener
     public void onPreInit(GamePreInitializationEvent preInitEvent) {
-        logger.info("Setting up config");
-
-        rootNode = configManager.createEmptyNode();
+        ConsoleConfig configuration;
         try {
-            configMapper = ObjectMapper.forClass(ColorConsoleConfig.class).bindToNew();
-
-            rootNode = configManager.load();
-            configMapper.populate(rootNode);
-
-            //add and save missing values
-            configMapper.serialize(rootNode);
-            configManager.save(rootNode);
-        } catch (IOException | ObjectMappingException ioEx) {
-            logger.error("Cannot save default config", ioEx);
+            saveDefaultConfig();
+            configuration = loadConfiguration();
+        } catch (IOException ioEx) {
+            logger.warn("Failed to load configuration file. Canceling plugin setup", ioEx);
             return;
         }
 
-        installLogFormat();
+        installLogFormat(configuration);
     }
 
-    private void installLogFormat() {
-        Appender terminalAppender = CommonLogInstaller.getTerminalAppender(TERMINAL_NAME);
-
-        Layout<? extends Serializable> oldLayout = terminalAppender.getLayout();
-        String logFormat = configMapper.getInstance().getLogFormat();
-        String appenderClass = terminalAppender.getClass().getName();
-        if (oldLayout.toString().contains("minecraftFormatting") || appenderClass.contains("minecrell")) {
-            logFormat = logFormat.replace("%msg", "%minecraftFormatting{%msg}");
-        }
-
-        if (configMapper.getInstance().isColorLoggingLevel()) {
-            logFormat = logFormat.replace("%level",  "%highlight{%level}{"
-                    + "FATAL=" + configMapper.getInstance().getLevelColors().get("FATAL") + ", "
-                    + "ERROR=" + configMapper.getInstance().getLevelColors().get("ERROR") + ", "
-                    + "WARN=" + configMapper.getInstance().getLevelColors().get("WARN") + ", "
-                    + "INFO=" + configMapper.getInstance().getLevelColors().get("INFO") + ", "
-                    + "DEBUG=" + configMapper.getInstance().getLevelColors().get("DEBUG") + ", "
-                    + "TRACE=" + configMapper.getInstance().getLevelColors().get("TRACE") + '}');
-        }
-
-        String dateStyle = configMapper.getInstance().getDateStyle();
-        logFormat = logFormat.replace("%d{HH:mm:ss}", "%style{" + "%d{HH:mm:ss}" + "}{" + dateStyle + '}');
-
+    @Override
+    public void installLogFormat(ConsoleConfig configuration) {
         try {
-            PatternLayout layout = CommonLogInstaller.createLayout(logFormat);
-            CommonLogInstaller.setLayout(layout, terminalAppender);
-        } catch (ReflectiveOperationException ex) {
-            logger.warn("Cannot install log format", ex);
+            oldLayout = installer.installLog4JFormat(this, TERMINAL_NAME, configuration);
+        } catch (ReflectiveOperationException reflectiveEx) {
+            logger.error("Failed to install log format", reflectiveEx);
+        }
+    }
+
+    @Override
+    public void revertLogFormat() {
+        try {
+            installer.revertLog4JFormat(TERMINAL_NAME, oldLayout);
+        } catch (ReflectiveOperationException reflectiveEx) {
+            logger.warn("Cannot revert log format", reflectiveEx);
+        }
+    }
+
+    @Override
+    public ColorAppender createAppender(Appender oldAppender, Collection<String> hideMessages, boolean truncateCol) {
+        return new SpongeAppender(oldAppender, hideMessages, truncateCol);
+    }
+
+    @Override
+    public Path getPluginFolder() {
+        return pluginFolder;
+    }
+
+    @Override
+    public ConsoleConfig loadConfiguration() throws IOException {
+        Path configPath = pluginFolder.resolve(CONFIG_NAME);
+        YAMLConfigurationLoader configLoader = YAMLConfigurationLoader.builder().setPath(configPath).build();
+
+        ConsoleConfig consoleConfig = new ConsoleConfig();
+        ConfigurationNode rootNode = configLoader.load();
+        consoleConfig.setLogFormat(rootNode.getNode("logFormat").getString());
+        consoleConfig.setDateStyle(rootNode.getNode("dateStyle").getString());
+
+        consoleConfig.getLevelColors().clear();
+        if (rootNode.getNode("colorLoggingLevel").getBoolean()) {
+            ConfigurationNode levelSection = rootNode.getNode("Level");
+            for (LoggingLevel level : LoggingLevel.values()) {
+                consoleConfig.getLevelColors().put(level, levelSection.getNode(level.name()).getString(""));
+            }
         }
 
-        ColorPluginAppender pluginAppender = new ColorPluginAppender(terminalAppender, getConfig());
-        pluginAppender.initPluginColors(getConfig().getPluginColors(), getConfig().getDefaultPluginColor());
+        consoleConfig.getPluginColors().clear();
+        if (rootNode.getNode("colorPluginTag").getBoolean()) {
+            ConfigurationNode pluginSection = rootNode.getNode("Plugin");
+            consoleConfig.setDefaultPluginColor(pluginSection.getNode(ConsoleConfig.DEFAULT_PLUGIN_KEY).getString(""));
+            for (Entry<Object, ? extends ConfigurationNode> pluginEntry : pluginSection.getChildrenMap().entrySet()) {
+                consoleConfig.getPluginColors().put((String) pluginEntry.getKey(), pluginEntry.getValue().getString());
+            }
+        }
 
-        CommonLogInstaller.installAppender(pluginAppender, TERMINAL_NAME);
-        CommonLogInstaller.installAppender(pluginAppender, "Console");
+        consoleConfig.getHideMessages().clear();
+        try {
+            List<String> list = rootNode.getNode("hide-messages").getList(TypeToken.of(String.class));
+            consoleConfig.getHideMessages().addAll(list);
+        } catch (ObjectMappingException mappingException) {
+            throw new IOException(mappingException);
+        }
+
+        consoleConfig.setTruncateColor(rootNode.getNode("truncateColor").getBoolean());
+        return consoleConfig;
     }
 }

@@ -1,19 +1,19 @@
 package com.github.games647.colorconsole.bungee;
 
 import com.github.games647.colorconsole.common.CommonFormatter;
+import com.github.games647.colorconsole.common.LoggingLevel;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.stream.Collectors;
 
 import net.md_5.bungee.api.ProxyServer;
 
@@ -21,31 +21,17 @@ import static java.util.stream.Collectors.toSet;
 
 public class ColorLogFormatter extends Formatter {
 
-    private final ColorConsoleBungee plugin;
     private final Formatter oldFormatter;
+    private final DateTimeFormatter date = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-    private final DateFormat date = new SimpleDateFormat("HH:mm:ss");
-
+    private final EnumMap<LoggingLevel, String> levelColors;
     private final CommonFormatter formatter;
 
-    public ColorLogFormatter(ColorConsoleBungee plugin, Formatter oldFormatter) {
-        this.plugin = plugin;
+    public ColorLogFormatter(Formatter oldFormatter, EnumMap<LoggingLevel, String> levels,
+                             Collection<String> hideMessages, boolean truncateColor) {
         this.oldFormatter = oldFormatter;
-
-        List<String> ignoreMessages = plugin.getConfiguration().getStringList("hide-messages");
-        boolean colorizeTag = plugin.getConfiguration().getBoolean("colorPluginTag");
-        boolean truncateColor = plugin.getConfiguration().getBoolean("truncateColor", false);
-
-        Map<String, String> levelColors = new HashMap<>();
-        if (plugin.getConfiguration().getBoolean("colorMessage", false)) {
-            levelColors.put("FATAL", plugin.getConfiguration().getString("FATAL"));
-            levelColors.put("ERROR", plugin.getConfiguration().getString("ERROR"));
-            levelColors.put("WARN", plugin.getConfiguration().getString("WARN"));
-            levelColors.put("DEBUG", plugin.getConfiguration().getString("DEBUG"));
-            levelColors.put("TRACE", plugin.getConfiguration().getString("TRACE"));
-        }
-
-        this.formatter = new CommonFormatter(ignoreMessages, colorizeTag, truncateColor, levelColors);
+        this.levelColors = levels;
+        this.formatter = new CommonFormatter(hideMessages, truncateColor);
     }
 
     @Override
@@ -57,22 +43,17 @@ public class ColorLogFormatter extends Formatter {
         StringBuilder formatted = new StringBuilder();
         String message = oldFormatter.formatMessage(record);
 
-        String levelColor = "";
-        if (plugin.getConfiguration().getBoolean("colorLoggingLevel")) {
-            String log4JName = translateToLog4JName(record.getLevel());
-            levelColor = formatter.format(plugin.getConfiguration().getString(log4JName));
-        }
-
+        String levelColor = levelColors.getOrDefault(translateToLog4JName(record.getLevel()), "");
         formatted.append(levelColor);
 
-        formatted.append(this.date.format(record.getMillis()));
+        formatted.append(date.format(Instant.ofEpochMilli(record.getMillis())));
         formatted.append(" [");
         formatted.append(record.getLevel().getName());
         formatted.append("] ");
 
         formatted.append(formatter.getReset());
 
-        formatted.append(formatter.colorizePluginTag(message, translateToLog4JName(record.getLevel())));
+        formatted.append(formatter.colorizePluginTag(message));
 
         formatted.append('\n');
         if (record.getThrown() != null) {
@@ -88,17 +69,17 @@ public class ColorLogFormatter extends Formatter {
         return oldFormatter;
     }
 
-    private String translateToLog4JName(Level level) {
+    private LoggingLevel translateToLog4JName(Level level) {
         if (level == Level.SEVERE) {
-            return "ERROR";
+            return LoggingLevel.ERROR;
         } else if (level == Level.WARNING) {
-            return "WARN";
+            return LoggingLevel.WARN;
         } else if (level == Level.INFO) {
-            return "INFO";
+            return LoggingLevel.INFO;
         } else if (level == Level.CONFIG) {
-            return "DEBUG";
+            return LoggingLevel.DEBUG;
         } else {
-            return "TRACE";
+            return LoggingLevel.TRACE;
         }
     }
 
@@ -108,18 +89,7 @@ public class ColorLogFormatter extends Formatter {
                 .collect(toSet());
     }
 
-    public void initPluginColors(String def) {
-        Set<String> plugins = loadPluginNames();
-        Map<String, String> pluginColors = new HashMap<>();
-        for (String pluginName : plugins) {
-            String color = plugin.getConfiguration().getString("P-" + pluginName);
-            if (color == null) {
-                continue;
-            }
-
-            pluginColors.put(pluginName, color);
-        }
-
-        formatter.initPluginColors(plugins, pluginColors, def);
+    public void initPluginColors(Map<String, String> pluginColors, String def) {
+        formatter.initPluginColors(loadPluginNames(), pluginColors, def);
     }
 }

@@ -4,10 +4,7 @@ import com.github.games647.colorconsole.common.ColorAppender;
 import com.google.common.collect.Sets;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.core.Appender;
@@ -15,25 +12,25 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.message.Message;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 
 import static java.util.stream.Collectors.toSet;
 
 public class ColorPluginAppender extends ColorAppender {
 
-    private static final Set<String> disabledPrefix = Sets.newHashSet("net.minecraft", "Minecraft"
-            , "com.mojang", "com.sk89q", "ru.tehkode", "Minecraft.AWE");
+    private static final Set<String> disabledPrefix = Sets.newHashSet(
+            "net.minecraft",
+            "Minecraft",
+            "com.mojang",
+            "com.sk89q",
+            "ru.tehkode",
+            "Minecraft.AWE"
+    );
 
     private final boolean isVanillaAppender;
 
-    public ColorPluginAppender(Appender oldAppender, ConfigurationSection config, Map<String, String> levelColors) {
-        super(oldAppender
-                , config.getStringList("hide-messages")
-                , config.getBoolean("colorPluginTag")
-                , config.getBoolean("truncateColor")
-                , config.getBoolean("colorMessage") ? levelColors : Collections.emptyMap());
-
+    public ColorPluginAppender(Appender oldAppender, Collection<String> hideMessage, boolean truncateColor) {
+        super(oldAppender, hideMessage, truncateColor);
         this.isVanillaAppender = "QueueLogAppender".equals(oldAppender.getClass().getSimpleName());
     }
 
@@ -48,7 +45,8 @@ public class ColorPluginAppender extends ColorAppender {
             oldMessage = prefix + oldMessage;
         }
 
-        Message newMessage = new SimpleMessage(formatter.colorizePluginTag(oldMessage, logEvent.getLevel().name()));
+        String message = formatter.colorizePluginTag(oldMessage);
+        Message newMessage = new SimpleMessage(message);
         return clone(logEvent, logEvent.getLoggerName(), newMessage);
     }
 
