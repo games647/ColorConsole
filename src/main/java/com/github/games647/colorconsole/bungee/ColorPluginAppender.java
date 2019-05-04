@@ -27,6 +27,7 @@ public class ColorPluginAppender extends ColorAppender {
     public LogEvent onAppend(LogEvent logEvent) {
         String message = logEvent.getMessage().getFormattedMessage();
         String loggerName = logEvent.getLoggerName();
+
         //old message + potential prefix and color codes
         StringBuilder msgBuilder = new StringBuilder(message.length() + loggerName.length() + 10);
         if (!PROXY_PREFIX.equals(loggerName)) {

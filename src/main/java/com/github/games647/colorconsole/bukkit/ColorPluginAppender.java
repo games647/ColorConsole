@@ -37,7 +37,12 @@ public class ColorPluginAppender extends ColorAppender {
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
-        String prefix = '[' + logEvent.getLoggerName() + "] ";
+
+        String prefix = "";
+        if (!logEvent.getLoggerName().isEmpty()) {
+            // this only necessary in Bukkit for console messages like commands
+            prefix = '[' + logEvent.getLoggerName() + "] ";
+        }
 
         //PaperSpigot append prefix
         if (!isVanillaAppender
