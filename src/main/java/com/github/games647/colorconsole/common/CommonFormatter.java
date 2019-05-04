@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
@@ -21,7 +22,10 @@ public class CommonFormatter {
     //copied from AnsiEscape in order to provide compatibility with older Minecraft versions
     private static final String CSI = "\u001b[";
     private static final char SUFFIX = 'm';
-    private final String reset = Ansi.ansi().a(Ansi.Attribute.RESET).toString();
+
+    private static final Pattern TAG_PATTERN = Pattern.compile("^\\[.+\\].*$");
+
+    private final String reset = Ansi.ansi().a(Attribute.RESET).toString();
 
     private final Set<String> ignoreMessages;
     private final boolean truncateColor;
@@ -63,6 +67,9 @@ public class CommonFormatter {
 
     public String colorizePluginTag(String message) {
         String newMessage = message;
+        if (!TAG_PATTERN.matcher(message).matches()) {
+            return newMessage;
+        }
 
         String startingColorCode = "";
         if (message.startsWith(CSI)) {

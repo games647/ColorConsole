@@ -37,11 +37,6 @@ public class ColorPluginAppender extends ColorAppender {
     @Override
     public LogEvent onAppend(LogEvent logEvent) {
         String oldMessage = logEvent.getMessage().getFormattedMessage();
-        if (logEvent.getLoggerName().isEmpty()) {
-            // ignore non logging messages like command output
-            return logEvent;
-        }
-
         String prefix = '[' + logEvent.getLoggerName() + "] ";
 
         //PaperSpigot append prefix

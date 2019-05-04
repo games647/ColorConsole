@@ -40,6 +40,33 @@ public class CommonFormatterTest {
     }
 
     @Test
+    public void testColorizePluginTagNotPresentRight() {
+        loadPluginColors();
+
+        // unmodified
+        String msg = "[TestPlugin msg";
+        assertThat(formatter.colorizePluginTag(msg), is(msg));
+    }
+
+    @Test
+    public void testColorizePluginTagNotPresentLeft() {
+        loadPluginColors();
+
+        // unmodified
+        String msg = "TestPlugin] msg";
+        assertThat(formatter.colorizePluginTag(msg), is(msg));
+    }
+
+    @Test
+    public void testColorizePluginTagWrongOrder() {
+        loadPluginColors();
+
+        // unmodified
+        String msg = "]TestPlugin[ msg";
+        assertThat(formatter.colorizePluginTag(msg), is(msg));
+    }
+
+    @Test
     public void testColorizeNameDefault() {
         loadPluginColors();
 
