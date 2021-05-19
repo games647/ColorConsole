@@ -5,6 +5,5 @@ updates:
   schedule:
     interval: weekly
   ignore:
+  # Ignore log4j, because it's a provided library
   - dependency-name: org.apache.logging.log4j:log4j-core
-    versions:
-    - 2.13.2
