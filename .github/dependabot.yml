@@ -4,15 +4,7 @@ updates:
   directory: "/"
   schedule:
     interval: weekly
-    time: "16:00"
-    timezone: Etc/Universal
-  open-pull-requests-limit: 10
   ignore:
   - dependency-name: org.apache.logging.log4j:log4j-core
     versions:
     - 2.13.2
-  - dependency-name: org.fusesource.jansi:jansi
-    versions:
-    - 2.2.0
-    - 2.3.1
-    - 2.3.2
