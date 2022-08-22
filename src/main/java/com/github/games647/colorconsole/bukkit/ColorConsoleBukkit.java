@@ -13,6 +13,7 @@ import java.util.logging.Level;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Layout;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class ColorConsoleBukkit extends JavaPlugin implements PlatformPlugin {
 
     private static final String TERMINAL_NAME = "TerminalConsole";
+    private static final String CATSERVER_TERMINAL = "Console";
+
 
     private final Log4JInstaller installer = new Log4JInstaller();
 
@@ -42,7 +45,7 @@ public class ColorConsoleBukkit extends JavaPlugin implements PlatformPlugin {
     @Override
     public void installLogFormat(ConsoleConfig configuration) {
         try {
-            oldLayout = installer.installLog4JFormat(this, TERMINAL_NAME, configuration);
+            oldLayout = installer.installLog4JFormat(this, getTerminalName(), configuration);
         } catch (ReflectiveOperationException reflectiveEx) {
             getLogger().log(Level.WARNING, "Failed to install log format", reflectiveEx);
         }
@@ -56,7 +59,7 @@ public class ColorConsoleBukkit extends JavaPlugin implements PlatformPlugin {
     @Override
     public void revertLogFormat() {
         try {
-            installer.revertLog4JFormat(TERMINAL_NAME, oldLayout);
+            installer.revertLog4JFormat(getTerminalName(), oldLayout);
         } catch (ReflectiveOperationException ex) {
             getLogger().log(Level.WARNING, "Cannot revert log format", ex);
         }
@@ -97,5 +100,13 @@ public class ColorConsoleBukkit extends JavaPlugin implements PlatformPlugin {
 
         consoleConfig.setTruncateColor(bukkitConfig.getBoolean("truncateColor"));
         return consoleConfig;
+    }
+
+    private String getTerminalName() {
+        if (Bukkit.getVersion().contains("Cat")) {
+            return CATSERVER_TERMINAL;
+        }
+
+        return TERMINAL_NAME;
     }
 }

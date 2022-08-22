@@ -8,8 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -108,8 +108,7 @@ public class Log4JInstaller {
     public Appender getTerminalAppender(String terminalName) {
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration conf = ctx.getConfiguration();
-
-        return conf.getAppenders().get(terminalName);
+        return conf.getAppender(terminalName);
     }
 
     @VisibleForTesting
@@ -119,12 +118,12 @@ public class Log4JInstaller {
 
     @VisibleForTesting
     protected String formatDate(String logFormat, String dateStyle) {
-        return logFormat.replaceFirst("(%d)\\{.*?\\}", "%style{$0}{" + dateStyle + '}');
+        return logFormat.replaceFirst("(%d)\\{.*?}", "%style{$0}{" + dateStyle + '}');
     }
 
     @VisibleForTesting
     protected String mapLoggingLevels(String logFormat, Map<LoggingLevel, String> levelColors) {
-        Map<LoggingLevel, String> sortedColors = new TreeMap<>();
+        Map<LoggingLevel, String> sortedColors = new EnumMap<>(LoggingLevel.class);
         sortedColors.putAll(levelColors);
 
         String levelFormat = Joiner.on(", ").withKeyValueSeparator('=').join(sortedColors);
